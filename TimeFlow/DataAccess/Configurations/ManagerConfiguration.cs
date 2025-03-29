@@ -34,6 +34,10 @@ namespace DataAccess.Configurations
                    .WithOne(c => c.Manager)
                    .HasForeignKey(c => c.ManagerId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(m => m.User)
+                .WithOne(u => u.Manager)
+                .HasForeignKey<Manager>(t => t.UserId);
         }
     }
 }

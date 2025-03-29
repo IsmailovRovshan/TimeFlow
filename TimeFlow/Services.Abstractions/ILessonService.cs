@@ -10,5 +10,6 @@ namespace Services.Abstractions
         Task UpdateAsync(Guid TeacherId, Guid ClientId, LessonDtoForUpdate lessonDto);
         Task DeleteAsync(Guid TeacherId, Guid ClientId);
 
+        Task<List<LessonDto>> GetLessonsByDateAsync(Guid teacherId, DateTime date);
     }
 }

@@ -10,5 +10,8 @@ namespace Domain.Repository
         Task UpdateAsync(Lesson lesson);
         Task DeleteAsync(Lesson lesson);
 
+
+        Task<List<Lesson>> GetLessonsByDateAsync(Guid teacherId, DateTime date);
+
     }
 }

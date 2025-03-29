@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using DataAccess.Configurations;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
@@ -7,18 +8,21 @@ namespace DataAccess
     {
         public RepositoryDbContext(DbContextOptions options) : base(options) { }
         public DbSet<Client> Clients { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<TimeSlot> TimeSlots { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Manager> Managers { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
 
-        public RepositoryDbContext(DbContextOptions<RepositoryDbContext> options)
-        : base(options)
-        {
-
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(RepositoryDbContext).Assembly);
+            modelBuilder.ApplyConfiguration(new ClientConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new TeacherConfiguration());
+            modelBuilder.ApplyConfiguration(new LessonConfiguration());
+            modelBuilder.ApplyConfiguration(new ManagerConfiguration());
+
+            base.OnModelCreating(modelBuilder);
         }
 
     }

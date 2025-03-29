@@ -47,5 +47,17 @@ namespace DataAccess.Repositories
             _dbContext.Lessons.Update(lesson);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<List<Lesson>> GetLessonsByDateAsync(Guid teacherId, DateTime date)
+        {
+            var lessons = await _dbContext.Lessons
+                    .Where(l => l.TeacherId == teacherId &&
+                    l.LessonDate.Year == date.Year &&
+                    l.LessonDate.Month == date.Month &&
+                    l.LessonDate.Day == date.Day)
+                    .ToListAsync();
+
+            return lessons;
+        }
     }
 }

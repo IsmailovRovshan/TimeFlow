@@ -1,4 +1,6 @@
-﻿namespace Services.Abstractions.DTO
+﻿using Domain;
+
+namespace Services.Abstractions.DTO
 {
     public record LessonDto(Guid TeacherId, Guid ClientId, DateTime LessonDate, Status Status);
     public record LessonDtoForCreate(Guid TeacherId, Guid ClientId, DateTime LessonDate, Status Status);

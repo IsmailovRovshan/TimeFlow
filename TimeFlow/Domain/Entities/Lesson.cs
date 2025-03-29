@@ -9,6 +9,7 @@
         public Client? Client { get; set; }
 
         public DateTime LessonDate { get; set; } = DateTime.Now;
-        //public Status Status { get; set; } = Status.Scheduled;
+        public Status Status { get; set; } = Status.Scheduled;
     }
+    
 }

@@ -11,5 +11,8 @@ namespace Domain.Entities
         public string FullName { get; set; } = string.Empty;
 
         public List<Client> Clients { get; set; } = new List<Client>();
+
+        public Guid UserId { get; set; }
+        public User? User { get; set; }
     }
 }
