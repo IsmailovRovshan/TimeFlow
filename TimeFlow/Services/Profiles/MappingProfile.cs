@@ -12,25 +12,30 @@ namespace Services.Profiles
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile()
-        {
-            CreateMap<Client, ClientDto>().ReverseMap();
-            CreateMap<Client, ClientDtoForCreate>().ReverseMap();
-            CreateMap<Client, ClientDtoForUpdate>().ReverseMap();
+            public MappingProfile()
+            {
+                CreateMap<Client, ClientDto>().ReverseMap();
+                CreateMap<Client, ClientDtoForCreate>().ReverseMap();
+                CreateMap<Client, ClientDtoForUpdate>().ReverseMap();
 
-            CreateMap<Teacher, TeacherDto>().ReverseMap();
-            CreateMap<Teacher, TeacherDtoForCreate>().ReverseMap();
-            CreateMap<Teacher, TeacherDtoForUpdate>().ReverseMap();
+                CreateMap<Lesson, LessonDto>().ReverseMap();
 
-            CreateMap<Manager, ManagerDto>().ReverseMap();
-            CreateMap<Manager, ManagerDtoForCreate>().ReverseMap();
-            CreateMap<Manager, ManagerDtoForUpdate>().ReverseMap();
+                CreateMap<Lesson, LessonDtoForCreate>().ReverseMap();
+                CreateMap<Lesson, LessonDtoForUpdate>().ReverseMap();
+                CreateMap<Lesson, LessonDtoForAutoCreate>().ReverseMap();
 
-            CreateMap<Lesson, LessonDto>().ReverseMap();
-            CreateMap<Lesson, LessonDtoForCreate>().ReverseMap();
-            CreateMap<Lesson, LessonDtoForUpdate>().ReverseMap();
-            CreateMap<Lesson, LessonDtoForAutoCreate>().ReverseMap();
+                CreateMap<User, UserDto>().ReverseMap();
+                CreateMap<User, UserDtoForCreate>().ReverseMap();
+                CreateMap<User, UserDtoForUpdate>().ReverseMap();
 
-        }
+                CreateMap<Subject, SubjectDto>().ReverseMap();
+                CreateMap<Subject, SubjectDtoForCreate>().ReverseMap();
+                CreateMap<Subject, SubjectDtoForUpdate>().ReverseMap();
+
+                CreateMap<TimeSlot, TimeSlotDto>().ReverseMap();
+                CreateMap<TimeSlot, TimeSlotDtoForCreate>().ReverseMap();
+                CreateMap<TimeSlot, TimeSlotDtoForUpdate>().ReverseMap();
+                CreateMap<TimeSlot, TimeSlotFilterDto>().ReverseMap();
+            }
     }
 }

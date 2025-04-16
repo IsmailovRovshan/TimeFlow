@@ -19,6 +19,8 @@ namespace DataAccess.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+       
+
         public async Task DeleteAsync(Client client)
         {
             _dbContext.Clients.Remove(client);
@@ -44,5 +46,12 @@ namespace DataAccess.Repositories
             _dbContext.Clients.Update(client);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task DeleteAllAsync()
+        {
+            _dbContext.Clients.RemoveRange(_dbContext.Clients);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }

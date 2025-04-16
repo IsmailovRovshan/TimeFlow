@@ -9,5 +9,7 @@ namespace Services.Abstractions
         Task<ClientDto> CreateAsync(ClientDtoForCreate clientDto);
         Task UpdateAsync(Guid clientId, ClientDtoForUpdate client);
         Task DeleteAsync(Guid clientId);
+        Task DeleteAllAsync();
+
     }
 }

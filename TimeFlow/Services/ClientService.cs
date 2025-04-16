@@ -9,7 +9,7 @@ namespace Services
     public class ClientService : IClientService
     {
         private readonly IClientRepository _clientRepository;
-        private readonly ITeacherRepository _teacherRepository;
+        private readonly IUserRepository _teacherRepository;
         private readonly ILessonRepository _lessonRepository;
 
         private readonly IMapper _mapper;
@@ -21,7 +21,10 @@ namespace Services
             _clientRepository = clientRepository;
             _mapper = mapper;
         }
-
+        public async Task DeleteAllAsync()
+        {
+            await _clientRepository.DeleteAllAsync();
+        }
         public async Task<ClientDto> CreateAsync(ClientDtoForCreate clientDto)
         {
             var client = _mapper.Map<Client>(clientDto);

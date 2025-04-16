@@ -9,5 +9,9 @@ namespace Domain.Repository
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task DeleteAsync(User user);
+        Task DeleteAllAsync();
+
+        // Получение списка свободных преподов
+        Task<List<User>> GetFreeAsync(DayOfWeek dayOfWeek, TimeSpan time);
     }
 }

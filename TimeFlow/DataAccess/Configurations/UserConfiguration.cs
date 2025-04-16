@@ -10,13 +10,19 @@ namespace DataAccess.Configurations
         {
             builder.HasKey(u => u.Id);
 
-            builder.HasOne(u => u.Teacher)
-                .WithOne(t => t.User)
-                .HasForeignKey<User>(u => u.TeacherId);
+            builder.HasMany(u => u.Lessons)
+               .WithOne(l => l.User)
+               .HasForeignKey(l => l.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(u => u.Manager)
-                .WithOne(m => m.User)
-                .HasForeignKey<User>(u => u.MangerId);
+            builder.HasMany(u => u.Subjects)
+                .WithMany(s => s.Users);
+
+            builder.HasMany(u => u.TimeSlots)
+                .WithOne(t => t.User)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            ;
         }
     }
 }

@@ -29,14 +29,14 @@ namespace DataAccess.Repositories
         public async Task<List<TimeSlot>> GetAllAsync()
         {
             return await _dbContext.TimeSlots
-                .Include(t => t.Teachers)
+                .Include(t => t.User)
                 .ToListAsync();
         }
 
         public async Task<TimeSlot> GetByIdAsync(Guid id)
         {
             return await _dbContext.TimeSlots
-                .Include(t => t.Teachers)
+                .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
@@ -45,5 +45,12 @@ namespace DataAccess.Repositories
             _dbContext.TimeSlots.Update(timeSlot);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task DeleteAllAsync()
+        {
+            _dbContext.TimeSlots.RemoveRange(_dbContext.TimeSlots);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }

@@ -9,5 +9,7 @@ namespace Domain.Repository
         Task AddAsync(TimeSlot timeSlot);
         Task UpdateAsync(TimeSlot timeSlot);
         Task DeleteAsync(TimeSlot timeSlot);
+
+        Task DeleteAllAsync();
     }
 }

@@ -5,7 +5,9 @@
         public Guid Id { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
         public TimeSpan Time { get; set; }
+        public bool IsBusy { get; set; } = true;
 
-        public List<Teacher> Teachers { get; set; } = new List<Teacher>();
+        public User? User { get; set; } 
+        public Guid UserId { get; set; } 
     }
 }

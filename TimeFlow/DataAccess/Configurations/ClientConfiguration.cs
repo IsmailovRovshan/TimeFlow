@@ -14,10 +14,6 @@ namespace DataAccess.Configurations
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.HasOne(c => c.Manager)
-                   .WithMany(m => m.Clients)
-                   .HasForeignKey(c => c.ManagerId);
-
             builder.HasMany(c => c.Lessons)
                    .WithOne(l => l.Client)
                    .HasForeignKey(l => l.ClientId)

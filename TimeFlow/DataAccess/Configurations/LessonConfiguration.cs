@@ -13,11 +13,11 @@ namespace DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Lesson> builder)
         {
-            builder.HasKey(l => new { l.TeacherId, l.ClientId });
+            builder.HasKey(l => l.Id);
 
-            builder.HasOne(l => l.Teacher)
-                   .WithMany(t => t.Lessons)
-                   .HasForeignKey(l => l.TeacherId);
+            builder.HasOne(l => l.User)
+                   .WithMany(u => u.Lessons)
+                   .HasForeignKey(l => l.UserId);
 
             builder.HasOne(l => l.Client)
                    .WithMany(c => c.Lessons)

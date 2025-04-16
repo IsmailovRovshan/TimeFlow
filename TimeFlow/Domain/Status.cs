@@ -2,10 +2,9 @@
 {
     public enum Status
     {
-        Scheduled,
-        Completed,
-        Cancelled,
-        InProgress,
-        Rescheduled
+        Запланирован,
+        Завершён,
+        Перенесён,
+        Отменён
     }
 }

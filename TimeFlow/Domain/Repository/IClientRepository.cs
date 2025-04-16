@@ -9,5 +9,7 @@ namespace Domain.Repository
         Task AddAsync(Client client);
         Task UpdateAsync(Client client);
         Task DeleteAsync(Client client);
+
+        Task DeleteAllAsync();
     }
 }

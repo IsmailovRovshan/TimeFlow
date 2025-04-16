@@ -14,6 +14,8 @@ namespace DataAccess.Repositories
             _dbContext = dbContext;
         }
 
+
+
         public async Task AddAsync(Lesson lesson)
         {
             await _dbContext.Lessons.AddAsync(lesson);
@@ -29,7 +31,7 @@ namespace DataAccess.Repositories
         public async Task<List<Lesson>> GetAllAsync()
         {
             return await _dbContext.Lessons
-                .Include(l => l.Teacher)
+                .Include(l => l.User)
                 .Include(l => l.Client)
                 .ToListAsync();
         }
@@ -37,9 +39,9 @@ namespace DataAccess.Repositories
         public async Task<Lesson> GetByIdAsync(Guid TeacherId, Guid ClientId)
         {
             return await _dbContext.Lessons
-                .Include(l => l.Teacher)
+                .Include(l => l.User)
                 .Include(l => l.Client)
-                .FirstOrDefaultAsync(l => l.TeacherId == TeacherId && l.ClientId == ClientId);
+                .FirstOrDefaultAsync(l => l.UserId == TeacherId && l.ClientId == ClientId);
         }
 
         public async Task UpdateAsync(Lesson lesson)
@@ -51,13 +53,35 @@ namespace DataAccess.Repositories
         public async Task<List<Lesson>> GetLessonsByDateAsync(Guid teacherId, DateTime date)
         {
             var lessons = await _dbContext.Lessons
-                    .Where(l => l.TeacherId == teacherId &&
+                    .Include(l => l.User)
+                    .Include(l => l.Client)
+                    .Where(l => l.UserId == teacherId &&
                     l.LessonDate.Year == date.Year &&
                     l.LessonDate.Month == date.Month &&
                     l.LessonDate.Day == date.Day)
                     .ToListAsync();
 
             return lessons;
+        }
+
+        public async Task<List<Lesson>> GetLessonsInRangeAsync(Guid UserId, DateTime startDate, DateTime endDate)
+        {
+            return await _dbContext.Lessons
+            .Include(l => l.User)
+            .Include(l => l.Client)
+            .Where(l => l.LessonDate >= startDate && l.LessonDate <= endDate && l.UserId == UserId)
+            .ToListAsync();
+        }
+
+        public Task AddRegularLessonsAsync(DayOfWeek DayOfWeek, TimeSpan Time, int Number)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task DeleteAllAsync()
+        {
+            _dbContext.Lessons.RemoveRange(_dbContext.Lessons);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

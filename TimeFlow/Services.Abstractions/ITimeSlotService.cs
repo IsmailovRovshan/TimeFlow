@@ -1,4 +1,5 @@
 ﻿
+using Domain.Entities;
 using Services.Abstractions.DTO;
 
 namespace Services.Abstractions
@@ -10,5 +11,8 @@ namespace Services.Abstractions
         Task<TimeSlotDto> CreateAsync(TimeSlotDtoForCreate managerDto);
         Task UpdateAsync(Guid managerId, TimeSlotDtoForUpdate manager);
         Task DeleteAsync(Guid managerId);
+
+        Task DeleteAllAsync();
+
     }
 }

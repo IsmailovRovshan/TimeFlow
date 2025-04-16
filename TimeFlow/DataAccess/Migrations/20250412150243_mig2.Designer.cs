@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(RepositoryDbContext))]
-    [Migration("20250327183731_mig1")]
-    partial class mig1
+    [Migration("20250412150243_mig2")]
+    partial class mig2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,19 +39,19 @@ namespace DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Guid>("ManagerId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ManagerId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
-                    b.Property<Guid>("TeacherId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ClientId")
@@ -63,83 +63,26 @@ namespace DataAccess.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.HasKey("TeacherId", "ClientId");
+                    b.HasKey("UserId", "ClientId");
 
                     b.HasIndex("ClientId");
 
                     b.ToTable("Lessons");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Manager", b =>
+            modelBuilder.Entity("Domain.Entities.Subject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Password")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Managers");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Teacher", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Teachers");
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("Domain.Entities.TimeSlot", b =>
@@ -151,12 +94,20 @@ namespace DataAccess.Migrations
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsBusy")
+                        .HasColumnType("boolean");
+
                     b.Property<TimeSpan>("Time")
                         .HasColumnType("interval");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.ToTable("TimeSlot");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TimeSlots");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -165,16 +116,23 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("Age")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Experiense")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<Guid>("MangerId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -183,38 +141,35 @@ namespace DataAccess.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("TeacherId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("TeacherTimeSlot", b =>
+            modelBuilder.Entity("SubjectUser", b =>
                 {
-                    b.Property<Guid>("TeachersId")
+                    b.Property<Guid>("SubjectsId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("TimeSlotsId")
+                    b.Property<Guid>("UsersId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("TeachersId", "TimeSlotsId");
+                    b.HasKey("SubjectsId", "UsersId");
 
-                    b.HasIndex("TimeSlotsId");
+                    b.HasIndex("UsersId");
 
-                    b.ToTable("TeacherTimeSlot");
+                    b.ToTable("SubjectUser");
                 });
 
             modelBuilder.Entity("Domain.Entities.Client", b =>
                 {
-                    b.HasOne("Domain.Entities.Manager", "Manager")
-                        .WithMany("Clients")
-                        .HasForeignKey("ManagerId")
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Manager");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
@@ -225,50 +180,39 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Teacher", "Teacher")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Lessons")
-                        .HasForeignKey("TeacherId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Client");
 
-                    b.Navigation("Teacher");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Manager", b =>
+            modelBuilder.Entity("Domain.Entities.TimeSlot", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
-                        .WithOne("Manager")
-                        .HasForeignKey("Domain.Entities.Manager", "UserId")
+                        .WithMany("TimeSlots")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Teacher", b =>
+            modelBuilder.Entity("SubjectUser", b =>
                 {
-                    b.HasOne("Domain.Entities.User", "User")
-                        .WithOne("Teacher")
-                        .HasForeignKey("Domain.Entities.Teacher", "UserId")
+                    b.HasOne("Domain.Entities.Subject", null)
+                        .WithMany()
+                        .HasForeignKey("SubjectsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TeacherTimeSlot", b =>
-                {
-                    b.HasOne("Domain.Entities.Teacher", null)
+                    b.HasOne("Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("TeachersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.TimeSlot", null)
-                        .WithMany()
-                        .HasForeignKey("TimeSlotsId")
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -278,21 +222,11 @@ namespace DataAccess.Migrations
                     b.Navigation("Lessons");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Manager", b =>
-                {
-                    b.Navigation("Clients");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Teacher", b =>
-                {
-                    b.Navigation("Lessons");
-                });
-
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
-                    b.Navigation("Manager");
+                    b.Navigation("Lessons");
 
-                    b.Navigation("Teacher");
+                    b.Navigation("TimeSlots");
                 });
 #pragma warning restore 612, 618
         }
