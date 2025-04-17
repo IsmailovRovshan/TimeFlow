@@ -15,7 +15,7 @@ namespace Services.Abstractions
         Task<List<LessonDto>> GetLessonsInRangeAsync(LessonDtoInRange lessonDto);
         
         Task AddRegularLessonsAsync(LessonDtoForRegularLessons lessonDto);
-        Task AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd);
+        Task<UserDto> AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd);
 
     }
 }

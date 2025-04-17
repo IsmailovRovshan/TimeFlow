@@ -138,12 +138,12 @@ namespace Web.Controllers
 
             try
             {
-                await _lessonService.AutoSearch(lessonDtoForAutoAdd);
-                return Ok("Регулярные уроки успешно добавлены на основе авто-поиска.");
+                var teacherDto = await _lessonService.AutoSearch(lessonDtoForAutoAdd);
+                return Ok("Регулярные уроки успешно добавлены на основе авто-поиска. Преподаватель: " + teacherDto.FullName);
             }
             catch (InvalidOperationException e)
             {
-                return NotFound(e.Message); // например, "Нет свободных преподавателей для выбранного времени."
+                return NotFound(e.Message); 
             }
             catch (Exception e)
             {

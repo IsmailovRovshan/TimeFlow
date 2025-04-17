@@ -10,6 +10,7 @@ namespace Domain.Repository
         Task UpdateAsync(TimeSlot timeSlot);
         Task DeleteAsync(TimeSlot timeSlot);
 
+        Task<TimeSlot?> GetByUserDayTimeAsync(Guid userId, DayOfWeek dayOfWeek, TimeSpan time);
         Task DeleteAllAsync();
     }
 }

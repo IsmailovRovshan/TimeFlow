@@ -52,5 +52,14 @@ namespace DataAccess.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<TimeSlot?> GetByUserDayTimeAsync(Guid userId, DayOfWeek dayOfWeek, TimeSpan time)
+        {
+            return await _dbContext.TimeSlots
+                .FirstOrDefaultAsync(ts =>
+                    ts.UserId == userId &&
+                    ts.DayOfWeek == dayOfWeek &&
+                    ts.Time == time);
+        }
+
     }
 }

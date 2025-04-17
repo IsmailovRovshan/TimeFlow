@@ -12,7 +12,6 @@
         public Role Role { get; set; }
 
 
-        // Teacher
         public List<TimeSlot> TimeSlots { get; set; } = new List<TimeSlot>();
         public List<Lesson> Lessons { get; set; } = new List<Lesson>();
 

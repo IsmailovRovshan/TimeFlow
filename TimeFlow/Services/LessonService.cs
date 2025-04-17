@@ -12,6 +12,7 @@ namespace Services
     {
         private readonly ILessonRepository _lessonRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ITimeSlotRepository _timeSlotRepository;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
@@ -19,11 +20,13 @@ namespace Services
             ILessonRepository lessonRepository,
             IUserRepository userRepository,
             IUserService userService,
+            ITimeSlotRepository timeRepository,
             IMapper mapper)
         {
             _lessonRepository = lessonRepository;
             _userRepository = userRepository;
             _userService = userService;
+            _timeSlotRepository = timeRepository;
             _mapper = mapper;
         }
         public async Task DeleteAllAsync()
@@ -122,8 +125,17 @@ namespace Services
 
                 await _lessonRepository.AddAsync(lesson);
             }
+
+            var timeSlot = await _timeSlotRepository.GetByUserDayTimeAsync(
+            lessonDto.UserId, lessonDto.DayOfWeek, lessonDto.Time);
+
+            if (timeSlot != null)
+            {
+                timeSlot.IsBusy = false;
+                await _timeSlotRepository.UpdateAsync(timeSlot);
+            }
         }
-        public async Task AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd)
+        public async Task<UserDto> AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd)
         {
             var timeSlotDto = new TimeSlotFilterDto(
                 lessonDtoForAutoAdd.DayOfWeek,
@@ -145,6 +157,7 @@ namespace Services
                 );
 
             await AddRegularLessonsAsync(regularLessonDto);
+            return _mapper.Map<UserDto>(user);
         }
 
     }

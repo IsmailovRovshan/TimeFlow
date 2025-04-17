@@ -19,10 +19,11 @@ namespace Services.Profiles
                 CreateMap<Client, ClientDtoForUpdate>().ReverseMap();
 
                 CreateMap<Lesson, LessonDto>().ReverseMap();
-
                 CreateMap<Lesson, LessonDtoForCreate>().ReverseMap();
                 CreateMap<Lesson, LessonDtoForUpdate>().ReverseMap();
-                CreateMap<Lesson, LessonDtoForAutoCreate>().ReverseMap();
+                CreateMap<Lesson, LessonDtoInRange>().ReverseMap();
+                CreateMap<Lesson, LessonDtoForAutoAdd>().ReverseMap();
+                CreateMap<Lesson, LessonDtoForRegularLessons>().ReverseMap();
 
                 CreateMap<User, UserDto>().ReverseMap();
                 CreateMap<User, UserDtoForCreate>().ReverseMap();
