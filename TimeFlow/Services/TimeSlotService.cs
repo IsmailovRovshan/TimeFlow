@@ -29,6 +29,12 @@ namespace Services
         }
         public async Task<TimeSlotDto> CreateAsync(TimeSlotDtoForCreate timeSlotDto)
         {
+            var existingSlot = await _timeSlotRepository.GetByUserDayTimeAsync(timeSlotDto.UserId, timeSlotDto.DayOfWeek, timeSlotDto.Time);
+
+            if (existingSlot != null) {
+                throw new ArgumentException("Такой слот уже существует");
+            }
+
             var timeSlot = _mapper.Map<TimeSlot>(timeSlotDto);
             await _timeSlotRepository.AddAsync(timeSlot);
             return _mapper.Map<TimeSlotDto>(timeSlot);
@@ -40,7 +46,7 @@ namespace Services
 
             if (timeSlot == null)
             {
-                throw new ArgumentException("Предмет не найден.");
+                throw new ArgumentException("Слот не найден.");
             }
 
             await _timeSlotRepository.DeleteAsync(timeSlot);
@@ -59,7 +65,7 @@ namespace Services
 
             if (timeSlot == null)
             {
-                throw new ArgumentException("Менеджер не найден.");
+                throw new ArgumentException("Слот не найден.");
             }
 
             return _mapper.Map<TimeSlotDto>(timeSlot);
@@ -71,7 +77,7 @@ namespace Services
 
             if (existingTimeSlot == null)
             {
-                throw new ArgumentException("Менеджер не найден.");
+                throw new ArgumentException("Слот не найден.");
             }
 
             _mapper.Map(timeSlot, existingTimeSlot);
