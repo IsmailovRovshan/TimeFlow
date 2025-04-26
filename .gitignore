@@ -28,3 +28,4 @@ bin/
 # Игнорирование файлов кэша
 *.cache
 *.csproj.user
+/TimeFlow/DataAccess/Migrations
