@@ -46,7 +46,7 @@ namespace Web.Controllers
             var createdLesson = await _lessonService.CreateAsync(lessonDto);
             return Ok(createdLesson);
         }
-
+        
         [HttpPut("{teacherId:guid}/{clientId:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid teacherId, Guid clientId, [FromBody] LessonDtoForUpdate lessonDto)
         {
@@ -99,28 +99,6 @@ namespace Web.Controllers
             return Ok(lessons);
         }
 
-        [HttpPost("regular")]
-        public async Task<IActionResult> AddRegularLessonsAsync([FromBody] LessonDtoForRegularLessons lessonDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                await _lessonService.AddRegularLessonsAsync(lessonDto);
-                return Ok("Регулярные уроки успешно добавлены.");
-            }
-            catch (KeyNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, $"Ошибка при добавлении регулярных уроков: {e.Message}");
-            }
-        }
         [HttpDelete]
         public async Task<IActionResult> DeleteAllAsync()
         {
@@ -148,6 +126,29 @@ namespace Web.Controllers
             catch (Exception e)
             {
                 return StatusCode(500, $"Ошибка при автоматическом поиске и добавлении уроков: {e.Message}");
+            }
+        }
+
+    
+        [HttpPost("regular")]
+        public async Task<IActionResult> AddRegularLessonsAsync(
+            [FromBody] CreateRegularLessonsDto lessonDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                await _lessonService.AddRegularLessonsAsync(lessonDto);
+                return Ok("Регулярные уроки успешно добавлены.");
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Ошибка при добавлении регулярных уроков: {e.Message}");
             }
         }
 

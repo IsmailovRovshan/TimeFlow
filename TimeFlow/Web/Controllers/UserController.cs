@@ -84,26 +84,27 @@ namespace Web.Controllers
         }
 
         [HttpPost("free")]
-        public async Task<IActionResult> GetFreeTeachersAsync([FromBody] TimeSlotFilterDto timeSlotDto)
+        public async Task<IActionResult> GetFreeTeachersAsync(
+             [FromBody] List<TimeSlotDtoDateWithTime> requestedSlots)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var freeTeachers = await _userService.GetFreeAsync(timeSlotDto);
+            var freeTeachers = await _userService.GetFreeAsync(requestedSlots);
             return Ok(freeTeachers);
         }
 
         [HttpPost("most-free")]
-        public async Task<IActionResult> GetFreeTeacherAsync([FromBody]  TimeSlotFilterDto timeSlotDto)
+        public async Task<IActionResult> GetFreeTeacherAsync([FromBody] TimeSlotDtoDateWithTime timeSlotDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var freeTeachers = await _userService.GetFreeTeacher(timeSlotDto);
-            return Ok(freeTeachers);
+          //  var freeTeachers = await _userService.GetFreeTeacher(timeSlotDto);
+            return Ok(null);
+
+            // TODO 
 
         }
 

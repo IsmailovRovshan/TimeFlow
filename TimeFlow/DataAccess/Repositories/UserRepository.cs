@@ -1,11 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
@@ -52,24 +47,53 @@ namespace DataAccess.Repositories
         }
 
         
-        public async Task<List<User>> GetFreeAsync(DayOfWeek dayOfWeek, TimeSpan time)
+        //public async Task<List<User>> GetFreeAsync(DayOfWeek dayOfWeek, TimeSpan time)
+        //{
+        //    return await _dbContext.Users
+        //        .Include(u => u.TimeSlots)
+        //        .Where(u => u.Role == Role.Teacher)
+        //        .Where(u => u.TimeSlots.Any(ts =>
+        //            ts.DayOfWeek == dayOfWeek &&
+        //            ts.Time == time &&
+        //            ts.IsBusy))
+        //        .OrderBy(u => u.TimeSlots
+        //        .Count(ts => ts.DayOfWeek == dayOfWeek && ts.Time == time && ts.IsBusy))
+        //        .ToListAsync();
+        //}
+
+        public async Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots)
         {
-            return await _dbContext.Users
+            var query = _dbContext.Users
                 .Include(u => u.TimeSlots)
-                .Where(u => u.Role == Role.Teacher)
-                .Where(u => u.TimeSlots.Any(ts =>
-                    ts.DayOfWeek == dayOfWeek &&
-                    ts.Time == time &&
-                    ts.IsBusy))
-                .OrderBy(u => u.TimeSlots
-                .Count(ts => ts.DayOfWeek == dayOfWeek && ts.Time == time && ts.IsBusy))
-                .ToListAsync();
+                .Where(u => u.Role == Role.Teacher);
+
+            foreach (var slot in requestedSlots)
+            {
+                query = query.Where(u =>
+                    u.TimeSlots.Any(ts =>
+                        ts.DayOfWeek == slot.DayOfWeek &&
+                        ts.Time == slot.Time &&
+                        ts.IsBusy    
+                    )
+                );
+
+                
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task DeleteAllAsync()
         {
             _dbContext.Users.RemoveRange(_dbContext.Users);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<User>> GetByIdsAsync(List<Guid> UserIds)
+        {
+            return await _dbContext.Users
+                .Where(u => UserIds.Contains(u.Id))
+                .ToListAsync(); ;
         }
 
     }

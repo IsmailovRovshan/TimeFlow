@@ -11,7 +11,6 @@
         public int? Experiense { get; set; }
         public Role Role { get; set; }
 
-
         public List<TimeSlot> TimeSlots { get; set; } = new List<TimeSlot>();
         public List<Lesson> Lessons { get; set; } = new List<Lesson>();
 

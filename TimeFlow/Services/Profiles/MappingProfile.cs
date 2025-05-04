@@ -23,7 +23,7 @@ namespace Services.Profiles
                 CreateMap<Lesson, LessonDtoForUpdate>().ReverseMap();
                 CreateMap<Lesson, LessonDtoInRange>().ReverseMap();
                 CreateMap<Lesson, LessonDtoForAutoAdd>().ReverseMap();
-                CreateMap<Lesson, LessonDtoForRegularLessons>().ReverseMap();
+                CreateMap<Lesson, CreateRegularLessonsDto>().ReverseMap();
 
                 CreateMap<User, UserDto>().ReverseMap();
                 CreateMap<User, UserDtoForCreate>().ReverseMap();
@@ -36,7 +36,7 @@ namespace Services.Profiles
                 CreateMap<TimeSlot, TimeSlotDto>().ReverseMap();
                 CreateMap<TimeSlot, TimeSlotDtoForCreate>().ReverseMap();
                 CreateMap<TimeSlot, TimeSlotDtoForUpdate>().ReverseMap();
-                CreateMap<TimeSlot, TimeSlotFilterDto>().ReverseMap();
+                CreateMap<TimeSlot, TimeSlotDtoDateWithTime>().ReverseMap();
             }
     }
 }

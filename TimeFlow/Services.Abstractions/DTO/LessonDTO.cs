@@ -11,5 +11,7 @@ namespace Services.Abstractions.DTO
     public record LessonDtoInRange(Guid UserId, DateTime startDate, DateTime endDate);
 
     public record LessonDtoForAutoAdd(Guid ClientId, DayOfWeek DayOfWeek, TimeSpan Time, int Number);
-    public record LessonDtoForRegularLessons(Guid UserId, Guid ClientId, DayOfWeek DayOfWeek, TimeSpan Time, int Number);
+
+
+    public record CreateRegularLessonsDto(Guid UserId, Guid ClientId, List<TimeSlotDtoDateWithTime> Slots, DateTime StartDate, int Number);
 }

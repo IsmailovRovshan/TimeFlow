@@ -1,10 +1,14 @@
-﻿using AutoMapper;
+﻿// Services/LessonService.cs
+using AutoMapper;
 using Domain;
 using Domain.Entities;
 using Domain.Repository;
 using Services.Abstractions;
 using Services.Abstractions.DTO;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Services
 {
@@ -20,35 +24,30 @@ namespace Services
             ILessonRepository lessonRepository,
             IUserRepository userRepository,
             IUserService userService,
-            ITimeSlotRepository timeRepository,
+            ITimeSlotRepository timeSlotRepository,
             IMapper mapper)
         {
             _lessonRepository = lessonRepository;
             _userRepository = userRepository;
             _userService = userService;
-            _timeSlotRepository = timeRepository;
+            _timeSlotRepository = timeSlotRepository;
             _mapper = mapper;
         }
-        public async Task DeleteAllAsync()
-        {
-            await _lessonRepository.DeleteAllAsync();
-        }
+
+        public Task DeleteAllAsync()
+            => _lessonRepository.DeleteAllAsync();
+
         public async Task<LessonDto> CreateAsync(LessonDtoForCreate lessonDto)
         {
-            var user = await _userRepository.GetByIdAsync(lessonDto.UserId);
-
             var lesson = _mapper.Map<Lesson>(lessonDto);
             await _lessonRepository.AddAsync(lesson);
             return _mapper.Map<LessonDto>(lesson);
         }
 
-        public async Task DeleteAsync(Guid UserId, Guid ClientId)
+        public async Task DeleteAsync(Guid userId, Guid clientId)
         {
-            var lesson = await _lessonRepository.GetByIdAsync(UserId, ClientId);
-            if (lesson == null)
-            {
-                throw new KeyNotFoundException("Урок не найден.");
-            }
+            var lesson = await _lessonRepository.GetByIdAsync(userId, clientId)
+                         ?? throw new KeyNotFoundException("Урок не найден.");
             await _lessonRepository.DeleteAsync(lesson);
         }
 
@@ -58,27 +57,19 @@ namespace Services
             return _mapper.Map<List<LessonDto>>(lessons);
         }
 
-        public async Task<LessonDto> GetByIdAsync(Guid UserId, Guid ClientId)
+        public async Task<LessonDto> GetByIdAsync(Guid userId, Guid clientId)
         {
-            var lesson = await _lessonRepository.GetByIdAsync(UserId, ClientId);
-            if (lesson == null)
-            {
-                throw new KeyNotFoundException("Урок не найден.");
-            }
+            var lesson = await _lessonRepository.GetByIdAsync(userId, clientId)
+                         ?? throw new KeyNotFoundException("Урок не найден.");
             return _mapper.Map<LessonDto>(lesson);
         }
 
-        public async Task UpdateAsync(Guid UserId, Guid ClientId, LessonDtoForUpdate lessonDto)
+        public async Task UpdateAsync(Guid userId, Guid clientId, LessonDtoForUpdate lessonDto)
         {
-            var lesson = await _lessonRepository.GetByIdAsync(UserId, ClientId);
-
-            if (lesson == null)
-            {
-                throw new KeyNotFoundException("Урок не найден.");
-            }
+            var lesson = await _lessonRepository.GetByIdAsync(userId, clientId)
+                         ?? throw new KeyNotFoundException("Урок не найден.");
 
             _mapper.Map(lessonDto, lesson);
-
             await _lessonRepository.UpdateAsync(lesson);
         }
 
@@ -88,77 +79,112 @@ namespace Services
             return _mapper.Map<List<LessonDto>>(lessons);
         }
 
-        // Получение занятий за промежуток времени
         public async Task<List<LessonDto>> GetLessonsInRangeAsync(LessonDtoInRange lessonDto)
         {
-            var lessons = await _lessonRepository.GetLessonsInRangeAsync(lessonDto.UserId, lessonDto.startDate, lessonDto.endDate);
+            var lessons = await _lessonRepository
+                .GetLessonsInRangeAsync(lessonDto.UserId, lessonDto.startDate, lessonDto.endDate);
             return _mapper.Map<List<LessonDto>>(lessons);
         }
-        // Добавления нескольких занятий в расписанием (составление регулярного занятия)
-        public async Task AddRegularLessonsAsync(LessonDtoForRegularLessons lessonDto)
+
+        public async Task AddRegularLessonsAsync(CreateRegularLessonsDto dto)
         {
-            var user = await _userRepository.GetByIdAsync(lessonDto.UserId);
-            if (user == null)
-                throw new KeyNotFoundException("Преподаватель не найден");
+            var user = await _userRepository.GetByIdAsync(dto.UserId)
+                       ?? throw new KeyNotFoundException("Преподаватель не найден");
 
-            var currentDate = DateTime.Today;
-            int daysToAdd = ((int)lessonDto.DayOfWeek - (int)currentDate.DayOfWeek + 7) % 7;
-            if (daysToAdd == 0)
-                daysToAdd = 7;
+            var firstDates = dto.Slots.ToDictionary(
+                slot => slot,
+                slot =>
+                {
+                    var daysToAdd = ((int)slot.DayOfWeek - (int)dto.StartDate.DayOfWeek + 7) % 7;
+                    var datePart = dto.StartDate.Date.AddDays(daysToAdd);
+                    return DateTime.SpecifyKind(datePart.Add(slot.Time), DateTimeKind.Utc);
+                });
 
-            var firstLessonDate = DateTime.SpecifyKind(
-                currentDate.AddDays(daysToAdd).Date + lessonDto.Time,
-                DateTimeKind.Utc);
-
-            for (int i = 0; i < lessonDto.Number; i++)
+            for (int i = 0; i < dto.Number; i++)
             {
-                var lessonDate = firstLessonDate.AddDays(i * 7);
+                var slot = dto.Slots[i % dto.Slots.Count];   
+                var weekIndex = i / dto.Slots.Count;             
+                var lessonDate = firstDates[slot].AddDays(weekIndex * 7);
 
                 var lesson = new Lesson
                 {
                     Id = Guid.NewGuid(),
-                    ClientId = lessonDto.ClientId,
-                    UserId = lessonDto.UserId,
+                    ClientId = dto.ClientId,
+                    UserId = dto.UserId,
                     LessonDate = lessonDate,
                     Status = Status.Запланирован
                 };
-
                 await _lessonRepository.AddAsync(lesson);
             }
 
-            var timeSlot = await _timeSlotRepository.GetByUserDayTimeAsync(
-            lessonDto.UserId, lessonDto.DayOfWeek, lessonDto.Time);
-
-            if (timeSlot != null)
+            foreach (var slot in dto.Slots)
             {
-                timeSlot.IsBusy = false;
-                await _timeSlotRepository.UpdateAsync(timeSlot);
+                var timeSlot = await _timeSlotRepository
+                    .GetByUserDayTimeAsync(dto.UserId, slot.DayOfWeek, slot.Time);
+                if (timeSlot != null && !timeSlot.IsBusy)
+                {
+                    timeSlot.IsBusy = true;
+                    await _timeSlotRepository.UpdateAsync(timeSlot);
+                }
             }
         }
+
+
         public async Task<UserDto> AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd)
         {
-            var timeSlotDto = new TimeSlotFilterDto(
-                lessonDtoForAutoAdd.DayOfWeek,
-                lessonDtoForAutoAdd.Time);
+            //var timeSlotDto = new TimeSlotFilterDto(
+            //    lessonDtoForAutoAdd.DayOfWeek,
+            //    lessonDtoForAutoAdd.Time);
 
-            var user = await _userService.GetFreeTeacher(timeSlotDto);
+            //// теперь GetFreeTeacher возвращает UserDto
+            //var userDto = await _userService.GetFreeTeacher(timeSlotDto);
+            //if (userDto == null)
+            //    throw new InvalidOperationException("Нет свободных преподавателей для выбранного времени.");
 
-            if (user == null)
-            {
-                throw new InvalidOperationException("Нет свободных преподавателей для выбранного времени.");
-            }
+            //var regularDto = new LessonDtoForRegularLessons(
+            //    userDto.Id,
+            //    lessonDtoForAutoAdd.ClientId,
+            //    lessonDtoForAutoAdd.DayOfWeek,
+            //    lessonDtoForAutoAdd.Time,
+            //    lessonDtoForAutoAdd.Number);
 
-            var regularLessonDto = new LessonDtoForRegularLessons(
-                    user.Id,
-                    lessonDtoForAutoAdd.ClientId,
-                    lessonDtoForAutoAdd.DayOfWeek,
-                    lessonDtoForAutoAdd.Time,
-                    lessonDtoForAutoAdd.Number
-                );
+            //await AddRegularLessonsAsync(regularDto);
+            //return userDto;
 
-            await AddRegularLessonsAsync(regularLessonDto);
-            return _mapper.Map<UserDto>(user);
+            return null;
+
+            // TODO 
         }
 
+        public async Task<UserDto> AutoSearchMulti(IEnumerable<LessonDtoForAutoAdd> lessonDtos)
+        {
+            //    var requestedSlots = lessonDtos
+            //        .Select(dto => new TimeSlot
+            //        {
+            //            DayOfWeek = dto.DayOfWeek,
+            //            Time = dto.Time
+            //        })
+            //        .ToList();
+
+            //    // репозиторий ищет User по всем слотам разом
+            //    var teacher = (await _userRepository.GetFreeAsync(requestedSlots))
+            //                  .FirstOrDefault()
+            //                  ?? throw new InvalidOperationException("Нет преподавателя с такими слотами.");
+
+            //    foreach (var dto in lessonDtos)
+            //    {
+            //        var regularDto = new LessonDtoForRegularLessons(
+            //            teacher.Id,
+            //            dto.ClientId,
+            //            dto.DayOfWeek,
+            //            dto.Time,
+            //            dto.Number);
+            //        await AddRegularLessonsAsync(regularDto);
+            //    }
+
+            //    return _mapper.Map<UserDto>(teacher);
+            //}
+            return null;
+        }
     }
 }

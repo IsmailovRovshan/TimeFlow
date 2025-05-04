@@ -14,8 +14,10 @@ namespace Services.Abstractions
         Task<List<LessonDto>> GetLessonsByDateAsync(Guid teacherId, DateTime date);
         Task<List<LessonDto>> GetLessonsInRangeAsync(LessonDtoInRange lessonDto);
         
-        Task AddRegularLessonsAsync(LessonDtoForRegularLessons lessonDto);
+        Task AddRegularLessonsAsync(CreateRegularLessonsDto lessonDto);
         Task<UserDto> AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd);
+
+        Task<UserDto> AutoSearchMulti(IEnumerable<LessonDtoForAutoAdd> lessonDtos);
 
     }
 }

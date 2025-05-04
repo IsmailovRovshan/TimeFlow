@@ -11,7 +11,8 @@ namespace Domain.Repository
         Task DeleteAsync(User user);
         Task DeleteAllAsync();
 
-        // Получение списка свободных преподов
-        Task<List<User>> GetFreeAsync(DayOfWeek dayOfWeek, TimeSpan time);
+        Task<List<User>> GetByIdsAsync(List<Guid> UserIds);
+
+        Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots);
     }
 }
