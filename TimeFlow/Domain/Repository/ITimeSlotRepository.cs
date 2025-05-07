@@ -12,5 +12,7 @@ namespace Domain.Repository
 
         Task<TimeSlot?> GetByUserDayTimeAsync(Guid userId, DayOfWeek dayOfWeek, TimeSpan time);
         Task DeleteAllAsync();
+
+        Task<List<TimeSlot>> GetFreeTimeSlotsByUser(Guid userId);
     }
 }

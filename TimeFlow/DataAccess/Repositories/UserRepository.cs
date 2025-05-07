@@ -96,5 +96,13 @@ namespace DataAccess.Repositories
                 .ToListAsync(); ;
         }
 
+        public async Task<User?> GetByLoginAsync(string login)
+        {
+            return await _dbContext.Users
+                .Include(u => u.TimeSlots)
+                .Include(u => u.Lessons)
+                .FirstOrDefaultAsync(u => u.Login == login);
+        }
+
     }
 }

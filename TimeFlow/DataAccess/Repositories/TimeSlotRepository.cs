@@ -61,5 +61,11 @@ namespace DataAccess.Repositories
                     ts.Time == time);
         }
 
+        public async Task<List<TimeSlot>> GetFreeTimeSlotsByUser(Guid userId)
+        {
+            return await _dbContext.TimeSlots
+                .Where(t => t.UserId == userId && t.IsBusy)
+                .ToListAsync();
+        }
     }
 }

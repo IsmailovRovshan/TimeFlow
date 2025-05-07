@@ -88,5 +88,12 @@ namespace Web.Controllers
             await _timeSlotService.DeleteAllAsync();
             return NoContent();
         }
+
+        [HttpGet("free/{id:guid}")]
+        public async Task<IActionResult> GetFreeByUserAsync(Guid id)
+        {
+            var timeSlots = await _timeSlotService.GetFreeTimeSlotsByUser(id);
+            return Ok(timeSlots);
+        }
     }
 }

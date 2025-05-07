@@ -84,5 +84,12 @@ namespace Services
 
             await _timeSlotRepository.UpdateAsync(existingTimeSlot);
         }
+
+        public async Task<List<TimeSlotDto>> GetFreeTimeSlotsByUser(Guid userId)
+        {
+            var timeSlots = await _timeSlotRepository.GetFreeTimeSlotsByUser(userId);
+            return _mapper.Map<List<TimeSlotDto>>(timeSlots);
+
+        }
     }
 }

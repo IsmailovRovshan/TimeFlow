@@ -32,4 +32,22 @@ namespace Services.Abstractions.DTO
         string Email
         );
 
+
+    public record RegisterDto(
+        string Login,
+        string Password,
+        string FullName,
+        string Email,
+        Role Role
+    );
+
+    public record LoginDto(
+        string Login,
+        string Password
+    );
+
+    public record AuthResponse(
+        string Token
+    );
+
 }

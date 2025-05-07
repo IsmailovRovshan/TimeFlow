@@ -11,8 +11,9 @@ namespace Services.Abstractions
         Task<TimeSlotDto> CreateAsync(TimeSlotDtoForCreate managerDto);
         Task UpdateAsync(Guid managerId, TimeSlotDtoForUpdate manager);
         Task DeleteAsync(Guid managerId);
-
         Task DeleteAllAsync();
+
+        Task<List<TimeSlotDto>> GetFreeTimeSlotsByUser(Guid userId);
 
     }
 }

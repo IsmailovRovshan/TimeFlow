@@ -12,6 +12,7 @@ namespace Domain.Repository
         Task DeleteAllAsync();
 
         Task<List<User>> GetByIdsAsync(List<Guid> UserIds);
+        Task<User?> GetByLoginAsync(string login);
 
         Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots);
     }
