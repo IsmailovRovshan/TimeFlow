@@ -114,5 +114,41 @@ namespace Web.Controllers
             await _userService.DeleteAllAsync();
             return NoContent();
         }
+
+        [HttpPost("{userId:guid}/subjects/{subjectId:guid}")]
+        public async Task<IActionResult> AddSubjectToUser(Guid userId, Guid subjectId)
+        {
+            try
+            {
+                await _userService.AddSubjectToUserAsync(userId, subjectId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{userId:guid}/subjects/{subjectId:guid}")]
+        public async Task<IActionResult> RemoveSubjectFromUser(Guid userId, Guid subjectId)
+        {
+            try
+            {
+                await _userService.RemoveSubjectFromUserAsync(userId, subjectId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

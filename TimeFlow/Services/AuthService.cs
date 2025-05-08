@@ -56,7 +56,7 @@ public class AuthService : IAuthService
         if (result == PasswordVerificationResult.Failed)
             throw new UnauthorizedAccessException("Неверный логин или пароль.");
 
-        // формируем JWT
+        
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),

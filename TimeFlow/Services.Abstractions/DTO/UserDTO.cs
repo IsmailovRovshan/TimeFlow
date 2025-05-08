@@ -49,5 +49,6 @@ namespace Services.Abstractions.DTO
     public record AuthResponse(
         string Token
     );
+    
 
 }

@@ -28,6 +28,7 @@ namespace DataAccess.Repositories
             return await _dbContext.Users
                 .Include(t => t.TimeSlots)
                 .Include(l => l.Lessons)
+                .Include(l => l.Subjects)
                 .ToListAsync();
         }
 
@@ -101,8 +102,20 @@ namespace DataAccess.Repositories
             return await _dbContext.Users
                 .Include(u => u.TimeSlots)
                 .Include(u => u.Lessons)
+                .Include(l => l.Subjects)
                 .FirstOrDefaultAsync(u => u.Login == login);
         }
 
+        public async Task AddSubjectToUserAsync(User user, Subject subject)
+        {
+            user.Subjects.Add(subject);
+            await _dbContext.SaveChangesAsync(); ;
+        }
+
+        public async Task RemoveSubjectFromUserAsync(User user, Subject subject)
+        {
+            user.Subjects.Remove(subject);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

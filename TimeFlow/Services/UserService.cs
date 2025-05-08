@@ -10,11 +10,13 @@ namespace Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _teacherRepository;
+        private readonly ISubjectRepository _subjectRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository teacherRepository, IMapper mapper)
+        public UserService(IUserRepository teacherRepository, ISubjectRepository subjectRepository , IMapper mapper)
         {
             _teacherRepository = teacherRepository;
+            _subjectRepository = subjectRepository;
             _mapper = mapper;
         }
 
@@ -73,6 +75,28 @@ namespace Services
 
             var users = await _teacherRepository.GetFreeAsync(slotEntities);
             return _mapper.Map<List<UserDto>>(users);
+        }
+
+        public async Task AddSubjectToUserAsync(Guid userId, Guid subjectId)
+        {
+            var user = await _teacherRepository.GetByIdAsync(userId) ?? throw new KeyNotFoundException($"Преподаватель {userId} не найден");
+            var subject = await _subjectRepository.GetByIdAsync(subjectId) ?? throw new KeyNotFoundException($"Предмет {subjectId} не найден"); ;
+
+            if (user.Subjects.Any(s => s.Id == subjectId))
+                return; 
+
+            await _teacherRepository.AddSubjectToUserAsync(user, subject);
+        }
+
+        public async Task RemoveSubjectFromUserAsync(Guid userId, Guid subjectId)
+        {
+            var user = await _teacherRepository.GetByIdAsync(userId) ?? throw new KeyNotFoundException($"Преподаватель {userId} не найден");
+            var subject = await _subjectRepository.GetByIdAsync(subjectId) ?? throw new KeyNotFoundException($"Предмет {subjectId} не найден");
+
+            if (!user.Subjects.Any(s => s.Id == subjectId))
+                 throw new InvalidOperationException("Этот предмет не привязан к преподавателю");
+
+            await _teacherRepository.RemoveSubjectFromUserAsync (user, subject);
         }
 
         //public async Task<UserDto> GetFreeTeacher(IEnumerable<TimeSlotFilterDto> requestedSlots)

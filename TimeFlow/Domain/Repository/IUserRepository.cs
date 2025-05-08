@@ -15,5 +15,9 @@ namespace Domain.Repository
         Task<User?> GetByLoginAsync(string login);
 
         Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots);
+
+
+        Task AddSubjectToUserAsync(User user, Subject subject);
+        Task RemoveSubjectFromUserAsync(User user, Subject subject);
     }
 }
