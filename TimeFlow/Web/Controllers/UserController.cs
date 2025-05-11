@@ -54,8 +54,8 @@ namespace Web.Controllers
             {
                 return BadRequest(ModelState);
             }
-            await _userService.UpdateAsync(id, userDto);
-            return NoContent();
+            var user = await _userService.UpdateAsync(id, userDto);
+            return Ok(user);
         }
 
         [HttpDelete("{id:guid}")]

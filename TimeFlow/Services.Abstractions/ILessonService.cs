@@ -1,4 +1,6 @@
-﻿using Services.Abstractions.DTO;
+﻿using Domain.Enums;
+using Services.Abstractions.DTO;
+using System.Threading.Tasks;
 
 namespace Services.Abstractions
 {
@@ -14,12 +16,13 @@ namespace Services.Abstractions
         Task<List<LessonDto>> GetLessonsByDateAsync(Guid teacherId, DateTime date);
         Task<List<LessonDto>> GetLessonsInRangeAsync(LessonDtoInRange lessonDto);
         
-        Task AddRegularLessonsAsync(CreateRegularLessonsDto lessonDto);
-        Task<UserDto> AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd);
+        Task<UserDto> AddRegularLessonsAsync(CreateRegularLessonsDto lessonDto);
+        //Task<UserDto> AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd);
 
-        Task<UserDto> AutoSearchMulti(IEnumerable<LessonDtoForAutoAdd> lessonDtos);
+        //Task<UserDto> AutoSearchMulti(IEnumerable<LessonDtoForAutoAdd> lessonDtos);
 
-        Task MainCreateLesson(MainCreateLessonDto lessonDtos);
+        Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, Guid UserId);
+        Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, SearchMode mode);
 
     }
 }

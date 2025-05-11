@@ -10,7 +10,7 @@ namespace Services.Abstractions
         Task<UserDto> GetByIdAsync(Guid id);
         Task<List<UserDto>> GetAllAsync();
         Task<UserDto> CreateAsync(UserDtoForCreate userDto);
-        Task UpdateAsync(Guid userId, UserDtoForUpdate userDto);
+        Task<UserDto> UpdateAsync(Guid userId, UserDtoForUpdate userDto);
         Task DeleteAsync(Guid userId);
         Task DeleteAllAsync();
 

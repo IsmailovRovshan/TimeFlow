@@ -43,13 +43,15 @@ namespace Services
             return _mapper.Map<UserDto>(teacher);
         }
 
-        public async Task UpdateAsync(Guid teacherId, UserDtoForUpdate teacherDto)
+        public async Task<UserDto> UpdateAsync(Guid teacherId, UserDtoForUpdate teacherDto)
         {
             var teacher = await _teacherRepository.GetByIdAsync(teacherId)
                           ?? throw new KeyNotFoundException("User not found");
 
             _mapper.Map(teacherDto, teacher);
             await _teacherRepository.UpdateAsync(teacher);
+
+            return _mapper.Map<UserDto>(teacher);
         }
 
         public async Task DeleteAsync(Guid teacherId)

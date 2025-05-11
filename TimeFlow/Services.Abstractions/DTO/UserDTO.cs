@@ -9,8 +9,8 @@ namespace Services.Abstractions.DTO
         string Login,
         string FullName,
         string Email,
-        int? Age,
-        int? Experiense,
+        int Age,
+        int Experiense,
         Role Role,
         List<TimeSlotDto> TimeSlots,
         List<LessonDto> Lessons,
@@ -19,18 +19,18 @@ namespace Services.Abstractions.DTO
 
     public record UserDtoForCreate(
         string Login,
-        string Password, 
+        string Password,
         string FullName,
         string Email,
         Role Role
         );
 
     public record UserDtoForUpdate(
-        string Login,
-        string Password,
-        string FullName,
-        string Email
-        );
+    string FullName,
+    string Email,
+    int Experiense,
+    int Age
+);
 
 
     public record RegisterDto(
@@ -49,6 +49,6 @@ namespace Services.Abstractions.DTO
     public record AuthResponse(
         string Token
     );
-    
+
 
 }

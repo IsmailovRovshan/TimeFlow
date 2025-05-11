@@ -2,7 +2,9 @@
 using AutoMapper;
 using Domain;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Repository;
+using Microsoft.Net.Http.Headers;
 using Services.Abstractions;
 using Services.Abstractions.DTO;
 using System;
@@ -92,8 +94,8 @@ namespace Services
                 .GetLessonsInRangeAsync(lessonDto.UserId, lessonDto.startDate, lessonDto.endDate);
             return _mapper.Map<List<LessonDto>>(lessons);
         }
-
-        public async Task AddRegularLessonsAsync(CreateRegularLessonsDto dto)
+        // Создание уроков в количестве указанном 
+        public async Task<UserDto> AddRegularLessonsAsync(CreateRegularLessonsDto dto)
         {
             var user = await _userRepository.GetByIdAsync(dto.UserId)
                        ?? throw new KeyNotFoundException("Преподаватель не найден");
@@ -128,73 +130,18 @@ namespace Services
             {
                 var timeSlot = await _timeSlotRepository
                     .GetByUserDayTimeAsync(dto.UserId, slot.DayOfWeek, slot.Time);
-                if (timeSlot != null && !timeSlot.IsBusy)
+
+                if (timeSlot != null && timeSlot.IsBusy)
                 {
-                    timeSlot.IsBusy = true;
+                    timeSlot.IsBusy = false;
                     await _timeSlotRepository.UpdateAsync(timeSlot);
                 }
             }
+            return _mapper.Map<UserDto>(user);
         }
 
-
-        public async Task<UserDto> AutoSearch(LessonDtoForAutoAdd lessonDtoForAutoAdd)
-        {
-            //var timeSlotDto = new TimeSlotFilterDto(
-            //    lessonDtoForAutoAdd.DayOfWeek,
-            //    lessonDtoForAutoAdd.Time);
-
-            //// теперь GetFreeTeacher возвращает UserDto
-            //var userDto = await _userService.GetFreeTeacher(timeSlotDto);
-            //if (userDto == null)
-            //    throw new InvalidOperationException("Нет свободных преподавателей для выбранного времени.");
-
-            //var regularDto = new LessonDtoForRegularLessons(
-            //    userDto.Id,
-            //    lessonDtoForAutoAdd.ClientId,
-            //    lessonDtoForAutoAdd.DayOfWeek,
-            //    lessonDtoForAutoAdd.Time,
-            //    lessonDtoForAutoAdd.Number);
-
-            //await AddRegularLessonsAsync(regularDto);
-            //return userDto;
-
-            return null;
-
-            // TODO 
-        }
-
-        public async Task<UserDto> AutoSearchMulti(IEnumerable<LessonDtoForAutoAdd> lessonDtos)
-        {
-            //    var requestedSlots = lessonDtos
-            //        .Select(dto => new TimeSlot
-            //        {
-            //            DayOfWeek = dto.DayOfWeek,
-            //            Time = dto.Time
-            //        })
-            //        .ToList();
-
-            //    // репозиторий ищет User по всем слотам разом
-            //    var teacher = (await _userRepository.GetFreeAsync(requestedSlots))
-            //                  .FirstOrDefault()
-            //                  ?? throw new InvalidOperationException("Нет преподавателя с такими слотами.");
-
-            //    foreach (var dto in lessonDtos)
-            //    {
-            //        var regularDto = new LessonDtoForRegularLessons(
-            //            teacher.Id,
-            //            dto.ClientId,
-            //            dto.DayOfWeek,
-            //            dto.Time,
-            //            dto.Number);
-            //        await AddRegularLessonsAsync(regularDto);
-            //    }
-
-            //    return _mapper.Map<UserDto>(teacher);
-            //}
-            return null;
-        }
-        
-        public async Task MainCreateLesson(MainCreateLessonDto lessonDtos, Guid UserId)
+        //Основной метод создания (преподаватель - вручную)
+        public async Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, Guid UserId)
         {
             var user = await _userRepository.GetByIdAsync(UserId) 
                 ?? throw new KeyNotFoundException("Преподаватель не найден");
@@ -219,17 +166,31 @@ namespace Services
                 lessonDtos.StartDate,
                 lessonDtos.Number
             );
-            await AddRegularLessonsAsync(dtoForCreate);
+            return await AddRegularLessonsAsync(dtoForCreate);
         }
 
-        public async Task MainCreateLesson(MainCreateLessonDto lessonDtos)
+        public async Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, SearchMode mode)
         {
             var teachers = await _userService.GetFreeAsync(lessonDtos.Slots, lessonDtos.SubjectId);
-            var bestTeacher = teachers
-                .OrderBy(t => t.TimeSlots.Count(ts => ts.IsBusy)).First() ?? throw new KeyNotFoundException("Преподаватели не найдены");
+            UserDto bestTeacher = null;
 
-            await MainCreateLesson(lessonDtos, bestTeacher.Id);
-            // todo, проверить работу и написать конт
+            switch (mode)
+            {
+                case SearchMode.TheMostFree:
+                    bestTeacher = teachers
+                    .OrderByDescending(t => t.TimeSlots.Count(ts => ts.IsBusy)).First() ?? throw new KeyNotFoundException("Преподаватели не найдены");
+                    break;
+                case SearchMode.ByExperience:
+                    bestTeacher = teachers
+                    .OrderByDescending(t => t.Experiense).First() ?? throw new KeyNotFoundException("Преподаватели не найдены");
+                    break;
+            }
+
+            if (bestTeacher == null) {
+                throw new KeyNotFoundException("Преподаватель null");
+            }
+
+            return await MainCreateLesson(lessonDtos, bestTeacher.Id);
         }
     }
 }

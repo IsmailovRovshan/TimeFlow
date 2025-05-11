@@ -2,6 +2,7 @@
 using Services.Abstractions.DTO;
 using Services.Abstractions;
 using Services;
+using Domain.Enums;
 
 namespace Web.Controllers
 {
@@ -93,19 +94,6 @@ namespace Web.Controllers
             return NoContent();
         }
 
-        [HttpPost("auto-search")]
-        public async Task<IActionResult> AutoSearchAsync([FromBody] LessonDtoForAutoAdd lessonDtoForAutoAdd)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var teacherDto = await _lessonService.AutoSearch(lessonDtoForAutoAdd);
-            return Ok("Регулярные уроки успешно добавлены на основе авто-поиска. Преподаватель: " + teacherDto.FullName);
-        }
-
-
         [HttpPost("regular")]
         public async Task<IActionResult> AddRegularLessonsAsync(
             [FromBody] CreateRegularLessonsDto lessonDto)
@@ -113,18 +101,29 @@ namespace Web.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _lessonService.AddRegularLessonsAsync(lessonDto);
-            return Ok("Регулярные уроки успешно добавлены.");
+            var lesson = await _lessonService.AddRegularLessonsAsync(lessonDto);
+            return Ok(lesson);
         }
 
         [HttpPost("main-create")]
-        public async Task<IActionResult> MainCreateLesson([FromBody] MainCreateLessonDto dto)
+        public async Task<IActionResult> MainCreateLesson([FromBody] MainCreateLessonDto dto, Guid userId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _lessonService.MainCreateLesson(dto);
-            return Ok("Урок успешно создан.");
+            var lesson = await _lessonService.MainCreateLesson(dto, userId);
+            return Ok(lesson);
+        }
+
+        [HttpPost("main-create/{mode}")]
+        public async Task<IActionResult> MainCreateLessonByMode([FromRoute] SearchMode mode, [FromBody] MainCreateLessonDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+
+            var lesson = await _lessonService.MainCreateLesson(dto, mode);
+            return Ok(lesson);
         }
 
     }
