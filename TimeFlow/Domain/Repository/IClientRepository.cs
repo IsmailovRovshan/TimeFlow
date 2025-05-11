@@ -6,7 +6,7 @@ namespace Domain.Repository
     {
         Task<Client> GetByIdAsync(Guid id);
         Task<List<Client>> GetAllAsync();
-        Task AddAsync(Client client);
+        Task<Client> AddAsync(Client client);
         Task UpdateAsync(Client client);
         Task DeleteAsync(Client client);
 

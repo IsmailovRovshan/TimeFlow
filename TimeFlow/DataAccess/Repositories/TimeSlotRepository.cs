@@ -30,6 +30,7 @@ namespace DataAccess.Repositories
         {
             return await _dbContext.TimeSlots
                 .Include(t => t.User)
+                .OrderBy(t => t.DayOfWeek)
                 .ToListAsync();
         }
 

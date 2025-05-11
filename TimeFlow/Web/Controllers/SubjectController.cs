@@ -55,30 +55,14 @@ namespace Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                await _subjectService.UpdateAsync(id, subjectDto);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Предмет не найден.");
-            }
-
+            await _subjectService.UpdateAsync(id, subjectDto);
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            try
-            {
-                await _subjectService.DeleteAsync(id);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Предмет не найден.");
-            }
-
+            await _subjectService.DeleteAsync(id);
             return NoContent();
         }
 

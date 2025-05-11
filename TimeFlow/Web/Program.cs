@@ -43,6 +43,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
@@ -95,10 +97,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Разрешаем CORS для фронтенда
 app.UseCors("AllowFrontend");
 
-// Важно: порядок
+app.UseMiddleware<Web.Middlewares.ExceptionHandlingMiddleware>();
+
+
 app.UseAuthentication();
 app.UseAuthorization();
 

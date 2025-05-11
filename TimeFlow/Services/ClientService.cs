@@ -9,9 +9,6 @@ namespace Services
     public class ClientService : IClientService
     {
         private readonly IClientRepository _clientRepository;
-        private readonly IUserRepository _teacherRepository;
-        private readonly ILessonRepository _lessonRepository;
-
         private readonly IMapper _mapper;
 
         public ClientService

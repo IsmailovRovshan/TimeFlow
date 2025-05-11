@@ -14,7 +14,7 @@ namespace Domain.Repository
         Task<List<User>> GetByIdsAsync(List<Guid> UserIds);
         Task<User?> GetByLoginAsync(string login);
 
-        Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots);
+        Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots, Guid subjectId);
 
 
         Task AddSubjectToUserAsync(User user, Subject subject);

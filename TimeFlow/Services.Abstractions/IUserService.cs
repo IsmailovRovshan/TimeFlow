@@ -17,7 +17,7 @@ namespace Services.Abstractions
         //Task<List<UserDto>> GetFreeAsync(TimeSlotFilterDto timeSlotDto);
         //Task<UserDto> GetFreeTeacher(TimeSlotFilterDto timeSlotDto);
 
-        Task<List<UserDto>> GetFreeAsync(IEnumerable<TimeSlotDtoDateWithTime> requestedSlots);
+        Task<List<UserDto>> GetFreeAsync(IEnumerable<TimeSlotDtoDateWithTime> requestedSlots, Guid subjectId);
         //Task<UserDto> GetFreeTeacher(IEnumerable<TimeSlotFilterDto> requestedSlots);
 
         Task AddSubjectToUserAsync(Guid userId, Guid subjectId);

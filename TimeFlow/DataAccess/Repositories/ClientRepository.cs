@@ -13,10 +13,12 @@ namespace DataAccess.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task AddAsync(Client client)
+        public async Task<Client> AddAsync(Client client)
         {
             await _dbContext.Clients.AddAsync(client);
             await _dbContext.SaveChangesAsync();
+
+            return client;
         }
 
        

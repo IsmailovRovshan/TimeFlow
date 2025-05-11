@@ -62,11 +62,14 @@ namespace DataAccess.Repositories
         //        .ToListAsync();
         //}
 
-        public async Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots)
+        public async Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots, Guid subjectId)
         {
             var query = _dbContext.Users
                 .Include(u => u.TimeSlots)
-                .Where(u => u.Role == Role.Teacher);
+                .Include(u => u.Lessons)
+                .Include(u => u.Subjects)
+                .Where(u => u.Role == Role.Teacher)
+                .Where(u => u.Subjects.Any(s => s.Id == subjectId));
 
             foreach (var slot in requestedSlots)
             {

@@ -46,7 +46,7 @@ namespace Web.Controllers
             var createdLesson = await _lessonService.CreateAsync(lessonDto);
             return Ok(createdLesson);
         }
-        
+
         [HttpPut("{teacherId:guid}/{clientId:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid teacherId, Guid clientId, [FromBody] LessonDtoForUpdate lessonDto)
         {
@@ -55,29 +55,16 @@ namespace Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                await _lessonService.UpdateAsync(teacherId, clientId, lessonDto);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Урок не найден.");
-            }
+            await _lessonService.UpdateAsync(teacherId, clientId, lessonDto);
+            return NoContent();
+
         }
 
         [HttpDelete("{teacherId:guid}/{clientId:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid teacherId, Guid clientId)
         {
-            try
-            {
-                await _lessonService.DeleteAsync(teacherId, clientId);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Урок не найден.");
-            }
+            await _lessonService.DeleteAsync(teacherId, clientId);
+            return NoContent();
         }
 
         [HttpGet("{teacherId:guid}/lessons")]
@@ -114,22 +101,11 @@ namespace Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var teacherDto = await _lessonService.AutoSearch(lessonDtoForAutoAdd);
-                return Ok("Регулярные уроки успешно добавлены на основе авто-поиска. Преподаватель: " + teacherDto.FullName);
-            }
-            catch (InvalidOperationException e)
-            {
-                return NotFound(e.Message); 
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, $"Ошибка при автоматическом поиске и добавлении уроков: {e.Message}");
-            }
+            var teacherDto = await _lessonService.AutoSearch(lessonDtoForAutoAdd);
+            return Ok("Регулярные уроки успешно добавлены на основе авто-поиска. Преподаватель: " + teacherDto.FullName);
         }
 
-    
+
         [HttpPost("regular")]
         public async Task<IActionResult> AddRegularLessonsAsync(
             [FromBody] CreateRegularLessonsDto lessonDto)
@@ -137,19 +113,18 @@ namespace Web.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                await _lessonService.AddRegularLessonsAsync(lessonDto);
-                return Ok("Регулярные уроки успешно добавлены.");
-            }
-            catch (KeyNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, $"Ошибка при добавлении регулярных уроков: {e.Message}");
-            }
+            await _lessonService.AddRegularLessonsAsync(lessonDto);
+            return Ok("Регулярные уроки успешно добавлены.");
+        }
+
+        [HttpPost("main-create")]
+        public async Task<IActionResult> MainCreateLesson([FromBody] MainCreateLessonDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _lessonService.MainCreateLesson(dto);
+            return Ok("Урок успешно создан.");
         }
 
     }

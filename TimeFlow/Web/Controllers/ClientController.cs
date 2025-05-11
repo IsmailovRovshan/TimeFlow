@@ -26,11 +26,6 @@ namespace Web.Controllers
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var client = await _clientService.GetByIdAsync(id);
-            if (client == null)
-            {
-                return NotFound("Клиент не найден.");
-            }
-
             return Ok(client);
         }
 
@@ -53,31 +48,14 @@ namespace Web.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            try
-            {
-                await _clientService.UpdateAsync(id, clientDto);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Клиент не найден.");
-            }
-
+            await _clientService.UpdateAsync(id, clientDto);
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            try
-            {
-                await _clientService.DeleteAsync(id);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Клиент не найден.");
-            }
-
+            await _clientService.DeleteAsync(id);
             return NoContent();
         }
 

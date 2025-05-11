@@ -69,11 +69,11 @@ namespace Services
         //    return free.FirstOrDefault();
         //}
 
-        public async Task<List<UserDto>> GetFreeAsync(IEnumerable<TimeSlotDtoDateWithTime> requestedSlots)
+        public async Task<List<UserDto>> GetFreeAsync(IEnumerable<TimeSlotDtoDateWithTime> requestedSlots, Guid subjectId)
         {
             var slotEntities = _mapper.Map<List<TimeSlot>>(requestedSlots);
 
-            var users = await _teacherRepository.GetFreeAsync(slotEntities);
+            var users = await _teacherRepository.GetFreeAsync(slotEntities, subjectId);
             return _mapper.Map<List<UserDto>>(users);
         }
 

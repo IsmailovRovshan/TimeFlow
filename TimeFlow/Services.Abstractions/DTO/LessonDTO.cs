@@ -14,4 +14,8 @@ namespace Services.Abstractions.DTO
 
 
     public record CreateRegularLessonsDto(Guid UserId, Guid ClientId, List<TimeSlotDtoDateWithTime> Slots, DateTime StartDate, int Number);
+
+    //Метод создания и составления расписания 
+    public record MainCreateLessonDto(string FullName, int Age, Guid SubjectId, List<TimeSlotDtoDateWithTime> Slots, 
+        DateTime StartDate, int Number);
 }

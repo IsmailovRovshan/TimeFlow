@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Services
 {
@@ -16,8 +17,10 @@ namespace Services
     {
         private readonly ILessonRepository _lessonRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IClientRepository _clientRepository;
         private readonly ITimeSlotRepository _timeSlotRepository;
         private readonly IUserService _userService;
+        private readonly ISubjectRepository _subjectRepository;
         private readonly IMapper _mapper;
 
         public LessonService(
@@ -25,12 +28,16 @@ namespace Services
             IUserRepository userRepository,
             IUserService userService,
             ITimeSlotRepository timeSlotRepository,
+            IClientRepository clientRepository,
+            ISubjectRepository subjectRepository,
             IMapper mapper)
         {
             _lessonRepository = lessonRepository;
             _userRepository = userRepository;
             _userService = userService;
+            _subjectRepository = subjectRepository;
             _timeSlotRepository = timeSlotRepository;
+            _clientRepository = clientRepository;
             _mapper = mapper;
         }
 
@@ -185,6 +192,44 @@ namespace Services
             //    return _mapper.Map<UserDto>(teacher);
             //}
             return null;
+        }
+        
+        public async Task MainCreateLesson(MainCreateLessonDto lessonDtos, Guid UserId)
+        {
+            var user = await _userRepository.GetByIdAsync(UserId) 
+                ?? throw new KeyNotFoundException("Преподаватель не найден");
+
+            var subject = await _subjectRepository.GetByIdAsync(lessonDtos.SubjectId)
+                ?? throw new KeyNotFoundException("Предмет не найден"); ;
+
+            var newClient = new Client
+            {
+                Id = Guid.NewGuid(),
+                FullName = lessonDtos.FullName,
+                Age = lessonDtos.Age
+            };
+
+            var client = await _clientRepository.AddAsync(newClient);
+
+            var dtoForCreate = new CreateRegularLessonsDto
+            (
+                UserId,
+                client.Id,
+                lessonDtos.Slots,
+                lessonDtos.StartDate,
+                lessonDtos.Number
+            );
+            await AddRegularLessonsAsync(dtoForCreate);
+        }
+
+        public async Task MainCreateLesson(MainCreateLessonDto lessonDtos)
+        {
+            var teachers = await _userService.GetFreeAsync(lessonDtos.Slots, lessonDtos.SubjectId);
+            var bestTeacher = teachers
+                .OrderBy(t => t.TimeSlots.Count(ts => ts.IsBusy)).First() ?? throw new KeyNotFoundException("Преподаватели не найдены");
+
+            await MainCreateLesson(lessonDtos, bestTeacher.Id);
+            // todo, проверить работу и написать конт
         }
     }
 }

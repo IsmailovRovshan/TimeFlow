@@ -54,45 +54,29 @@ namespace Web.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            try
-            {
-                await _userService.UpdateAsync(id, userDto);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Клиент не найден.");
-            }
-
+            await _userService.UpdateAsync(id, userDto);
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            try
-            {
-                await _userService.DeleteAsync(id);
-                Ok();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("не найден.");
-            }
-
+            await _userService.DeleteAsync(id);
             return NoContent();
         }
 
         [HttpPost("free")]
         public async Task<IActionResult> GetFreeTeachersAsync(
-             [FromBody] List<TimeSlotDtoDateWithTime> requestedSlots)
+        [FromQuery] Guid subjectId,
+        [FromBody] List<TimeSlotDtoDateWithTime> requestedSlots)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var freeTeachers = await _userService.GetFreeAsync(requestedSlots);
+            var freeTeachers = await _userService.GetFreeAsync(requestedSlots, subjectId);
             return Ok(freeTeachers);
         }
+
 
         [HttpPost("most-free")]
         public async Task<IActionResult> GetFreeTeacherAsync([FromBody] TimeSlotDtoDateWithTime timeSlotDto)
@@ -101,7 +85,7 @@ namespace Web.Controllers
             {
                 return BadRequest(ModelState);
             }
-          //  var freeTeachers = await _userService.GetFreeTeacher(timeSlotDto);
+            //  var freeTeachers = await _userService.GetFreeTeacher(timeSlotDto);
             return Ok(null);
 
             // TODO 
@@ -118,37 +102,15 @@ namespace Web.Controllers
         [HttpPost("{userId:guid}/subjects/{subjectId:guid}")]
         public async Task<IActionResult> AddSubjectToUser(Guid userId, Guid subjectId)
         {
-            try
-            {
-                await _userService.AddSubjectToUserAsync(userId, subjectId);
-                return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            await _userService.AddSubjectToUserAsync(userId, subjectId);
+            return NoContent();
         }
 
         [HttpDelete("{userId:guid}/subjects/{subjectId:guid}")]
         public async Task<IActionResult> RemoveSubjectFromUser(Guid userId, Guid subjectId)
         {
-            try
-            {
-                await _userService.RemoveSubjectFromUserAsync(userId, subjectId);
-                return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            await _userService.RemoveSubjectFromUserAsync(userId, subjectId);
+            return NoContent();
         }
     }
 }

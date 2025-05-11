@@ -19,5 +19,7 @@ namespace Services.Abstractions
 
         Task<UserDto> AutoSearchMulti(IEnumerable<LessonDtoForAutoAdd> lessonDtos);
 
+        Task MainCreateLesson(MainCreateLessonDto lessonDtos);
+
     }
 }
