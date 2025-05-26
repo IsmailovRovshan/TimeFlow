@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{04559632-E241-4A19-A1EC-43E71050B93B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeFlow.Tests", "TimeFlow.Tests\TimeFlow.Tests.csproj", "{65A3BFAE-E3A1-4ADF-B047-950CCD33120B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{29C1EC6F-3A08-418C-9783-2C6D82A057EB} = {29C1EC6F-3A08-418C-9783-2C6D82A057EB}
+		{73060EDF-3ADE-4190-AE8B-DF0D9ABD1281} = {73060EDF-3ADE-4190-AE8B-DF0D9ABD1281}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +45,10 @@ Global
 		{04559632-E241-4A19-A1EC-43E71050B93B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04559632-E241-4A19-A1EC-43E71050B93B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04559632-E241-4A19-A1EC-43E71050B93B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65A3BFAE-E3A1-4ADF-B047-950CCD33120B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65A3BFAE-E3A1-4ADF-B047-950CCD33120B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65A3BFAE-E3A1-4ADF-B047-950CCD33120B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65A3BFAE-E3A1-4ADF-B047-950CCD33120B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

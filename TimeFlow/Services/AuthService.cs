@@ -50,13 +50,12 @@ public class AuthService : IAuthService
     public async Task<AuthResponse> LoginAsync(LoginDto dto)
     {
         var user = await _userRepo.GetByLoginAsync(dto.Login)
-                   ?? throw new KeyNotFoundException("Неверный логин или пароль.");
+                   ?? throw new UnauthorizedAccessException("Неверный логин или пароль.");
 
         var result = _hasher.VerifyHashedPassword(user, user.Password, dto.Password);
         if (result == PasswordVerificationResult.Failed)
             throw new UnauthorizedAccessException("Неверный логин или пароль.");
 
-        
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),

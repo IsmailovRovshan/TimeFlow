@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 
 namespace Web.Middlewares
 {
@@ -21,24 +22,32 @@ namespace Web.Middlewares
             }
             catch (UnauthorizedAccessException ex)
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+                await HandleExceptionAsync(context, HttpStatusCode.Unauthorized, ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                await HandleExceptionAsync(context, HttpStatusCode.NotFound, ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error");
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await context.Response.WriteAsJsonAsync(new { error = "Произошла ошибка сервера" });
+                _logger.LogError(ex, "Произошла непредвиденная ошибка");
+                await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, "Произошла ошибка сервера");
             }
         }
 
-        //private async Task WriteJsonResponse(HttpContext context, string message)
-        //{
-        //    context.Response.ContentType = "application/json";
-        //    var response = JsonSerializer.Serialize(new { error = message });
-        //    await context.Response.WriteAsync(response);
-        //}
+        private static async Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, string message)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)statusCode;
 
+            var response = new { error = message };
+            var json = JsonSerializer.Serialize(response);
+
+            await context.Response.WriteAsync(json);
+        }
     }
-
 }

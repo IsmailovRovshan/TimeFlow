@@ -48,8 +48,18 @@ namespace Services
 
         public async Task<LessonDto> CreateAsync(LessonDtoForCreate lessonDto)
         {
+            var user = await _userRepository.GetByIdAsync(lessonDto.UserId)
+                ?? throw new KeyNotFoundException("Преподаватель не найден");
+
+            var client = await _clientRepository.GetByIdAsync(lessonDto.ClientId)
+                ?? throw new KeyNotFoundException("Клиент не найден");
+
+            if (lessonDto.LessonDate < DateTime.UtcNow)
+                throw new InvalidOperationException("Некорректная дата и время. Укажите дату и время, которые позже текущего момента");
+
             var lesson = _mapper.Map<Lesson>(lessonDto);
             await _lessonRepository.AddAsync(lesson);
+
             return _mapper.Map<LessonDto>(lesson);
         }
 
@@ -94,7 +104,7 @@ namespace Services
                 .GetLessonsInRangeAsync(lessonDto.UserId, lessonDto.startDate, lessonDto.endDate);
             return _mapper.Map<List<LessonDto>>(lessons);
         }
-        // Создание уроков в количестве указанном 
+        
         public async Task<UserDto> AddRegularLessonsAsync(CreateRegularLessonsDto dto)
         {
             var user = await _userRepository.GetByIdAsync(dto.UserId)

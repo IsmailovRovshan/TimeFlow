@@ -2,6 +2,7 @@
 using Services.Abstractions.DTO;
 using Services.Abstractions;
 using Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
 {
@@ -16,13 +17,14 @@ namespace Web.Controllers
             _subjectService = subjectService;
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var subjects = await _subjectService.GetAllAsync();
             return Ok(subjects);
         }
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
@@ -34,7 +36,7 @@ namespace Web.Controllers
 
             return Ok(subject);
         }
-
+        [Authorize(Roles = "Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] SubjectDtoForCreate subjectDto)
         {
@@ -46,7 +48,7 @@ namespace Web.Controllers
             var newSubject = await _subjectService.CreateAsync(subjectDto);
             return Ok(newSubject);
         }
-
+        [Authorize(Roles = "Manager")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] SubjectDtoForUpdate subjectDto)
         {
@@ -58,14 +60,14 @@ namespace Web.Controllers
             await _subjectService.UpdateAsync(id, subjectDto);
             return NoContent();
         }
-
+        [Authorize(Roles = "Manager")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _subjectService.DeleteAsync(id);
             return NoContent();
         }
-
+        [Authorize(Roles = "Manager")]
         [HttpDelete]
         public async Task<IActionResult> DeleteAllAsync()
         {

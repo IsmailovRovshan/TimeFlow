@@ -19,5 +19,7 @@ namespace Domain.Repository
 
         Task AddSubjectToUserAsync(User user, Subject subject);
         Task RemoveSubjectFromUserAsync(User user, Subject subject);
+
+        Task<User?> GetByEmailAsync(string email);
     }
 }

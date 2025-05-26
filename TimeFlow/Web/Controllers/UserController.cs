@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Abstractions;
 using Services.Abstractions.DTO;
@@ -14,14 +15,14 @@ namespace Web.Controllers
         {
             _userService = userService;
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var users = await _userService.GetAllAsync();
             return Ok(users);
         }
-
+        
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
@@ -34,7 +35,7 @@ namespace Web.Controllers
 
             return Ok(user);
         }
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] UserDtoForCreate userDto)
         {
@@ -46,7 +47,7 @@ namespace Web.Controllers
             var newUser = await _userService.CreateAsync(userDto);
             return Ok(newUser);
         }
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UserDtoForUpdate userDto)
         {
@@ -57,14 +58,14 @@ namespace Web.Controllers
             var user = await _userService.UpdateAsync(id, userDto);
             return Ok(user);
         }
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _userService.DeleteAsync(id);
             return NoContent();
         }
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("free")]
         public async Task<IActionResult> GetFreeTeachersAsync(
         [FromQuery] Guid subjectId,
@@ -77,7 +78,7 @@ namespace Web.Controllers
             return Ok(freeTeachers);
         }
 
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("most-free")]
         public async Task<IActionResult> GetFreeTeacherAsync([FromBody] TimeSlotDtoDateWithTime timeSlotDto)
         {
@@ -92,13 +93,14 @@ namespace Web.Controllers
 
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete]
         public async Task<IActionResult> DeleteAllAsync()
         {
             await _userService.DeleteAllAsync();
             return NoContent();
         }
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("{userId:guid}/subjects/{subjectId:guid}")]
         public async Task<IActionResult> AddSubjectToUser(Guid userId, Guid subjectId)
         {
@@ -106,6 +108,7 @@ namespace Web.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete("{userId:guid}/subjects/{subjectId:guid}")]
         public async Task<IActionResult> RemoveSubjectFromUser(Guid userId, Guid subjectId)
         {

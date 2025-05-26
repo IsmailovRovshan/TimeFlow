@@ -120,5 +120,11 @@ namespace DataAccess.Repositories
             user.Subjects.Remove(subject);
             await _dbContext.SaveChangesAsync();
         }
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
     }
 }

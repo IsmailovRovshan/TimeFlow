@@ -2,6 +2,7 @@
 using Services.Abstractions.DTO;
 using Services.Abstractions;
 using Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Controllers
 {
@@ -15,14 +16,14 @@ namespace Web.Controllers
         {
             _timeSlotService = timeSlotService;
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var timeSlots = await _timeSlotService.GetAllAsync();
             return Ok(timeSlots);
         }
-
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
@@ -34,7 +35,7 @@ namespace Web.Controllers
 
             return Ok(timeSlot);
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] TimeSlotDtoForCreate timeSlotDto)
         {
@@ -46,7 +47,7 @@ namespace Web.Controllers
             var newTimeSlot = await _timeSlotService.CreateAsync(timeSlotDto);
             return Ok(newTimeSlot);
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] TimeSlotDtoForUpdate timeSlotDto)
         {
@@ -58,21 +59,21 @@ namespace Web.Controllers
             await _timeSlotService.UpdateAsync(id, timeSlotDto);
             return NoContent();
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _timeSlotService.DeleteAsync(id);
             return NoContent();
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpDelete]
         public async Task<IActionResult> DeleteAllAsync()
         {
             await _timeSlotService.DeleteAllAsync();
             return NoContent();
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet("free/{id:guid}")]
         public async Task<IActionResult> GetFreeByUserAsync(Guid id)
         {

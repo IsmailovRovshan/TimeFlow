@@ -25,7 +25,14 @@ namespace Services
 
         public async Task<UserDto> CreateAsync(UserDtoForCreate teacherDto)
         {
+            if (await _teacherRepository.GetByLoginAsync(teacherDto.Login) is not null)
+                throw new InvalidOperationException($"Пользователь с логином «{teacherDto.Login}» уже существует.");
+
+            if (await _teacherRepository.GetByEmailAsync(teacherDto.Email) is not null)
+                throw new InvalidOperationException($"Пользователь с email «{teacherDto.Email}» уже существует.");
+
             var teacher = _mapper.Map<User>(teacherDto);
+
             await _teacherRepository.AddAsync(teacher);
             return _mapper.Map<UserDto>(teacher);
         }
