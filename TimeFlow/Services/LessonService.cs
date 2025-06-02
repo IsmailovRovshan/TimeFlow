@@ -24,6 +24,7 @@ namespace Services
         private readonly IUserService _userService;
         private readonly ISubjectRepository _subjectRepository;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
         public LessonService(
             ILessonRepository lessonRepository,
@@ -32,7 +33,8 @@ namespace Services
             ITimeSlotRepository timeSlotRepository,
             IClientRepository clientRepository,
             ISubjectRepository subjectRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IEmailService emailService)
         {
             _lessonRepository = lessonRepository;
             _userRepository = userRepository;
@@ -41,6 +43,13 @@ namespace Services
             _timeSlotRepository = timeSlotRepository;
             _clientRepository = clientRepository;
             _mapper = mapper;
+            _emailService = emailService;
+        }
+
+        public async Task<List<LessonDto>> GetAllByClientId(Guid ClientId)
+        {
+            var lessons = await _lessonRepository.GetAllByClientId(ClientId);
+            return _mapper.Map<List<LessonDto>>(lessons);
         }
 
         public Task DeleteAllAsync()
@@ -102,6 +111,7 @@ namespace Services
         {
             var lessons = await _lessonRepository
                 .GetLessonsInRangeAsync(lessonDto.UserId, lessonDto.startDate, lessonDto.endDate);
+
             return _mapper.Map<List<LessonDto>>(lessons);
         }
         
@@ -131,7 +141,8 @@ namespace Services
                     ClientId = dto.ClientId,
                     UserId = dto.UserId,
                     LessonDate = lessonDate,
-                    Status = Status.Запланирован
+                    Status = Status.Запланирован, 
+                    SubjectId = dto.SubjectId,
                 };
                 await _lessonRepository.AddAsync(lesson);
             }
@@ -150,7 +161,12 @@ namespace Services
             return _mapper.Map<UserDto>(user);
         }
 
-        //Основной метод создания (преподаватель - вручную)
+        public async Task<List<LessonDto>> GetAllByClientIdAndDateAsync(Guid clientId, DateTime date)
+        {
+            var lessons = await _lessonRepository.GetAllByClientIdAndDateAsync(clientId, date);
+            return _mapper.Map<List<LessonDto>>(lessons);
+        }
+
         public async Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, Guid UserId)
         {
             var user = await _userRepository.GetByIdAsync(UserId) 
@@ -174,7 +190,9 @@ namespace Services
                 client.Id,
                 lessonDtos.Slots,
                 lessonDtos.StartDate,
-                lessonDtos.Number
+                lessonDtos.Number,
+                lessonDtos.SubjectId
+
             );
             return await AddRegularLessonsAsync(dtoForCreate);
         }
@@ -201,6 +219,39 @@ namespace Services
             }
 
             return await MainCreateLesson(lessonDtos, bestTeacher.Id);
+        }
+
+        public async Task DeleteLessonByIdAsync(Guid lessonId)
+        {
+            var lesson = await _lessonRepository.GetByIdAsync(lessonId)
+                         ?? throw new KeyNotFoundException($"Урок с Id = {lessonId} не найден.");
+
+            lesson.Status = Status.Отменён;  
+
+            await _lessonRepository.UpdateAsync(lesson);
+        }
+
+        public async Task<LessonDto> RescheduleLessonAsync(RescheduleLessonDto dto)
+        {
+            var oldLesson = await _lessonRepository.GetByIdAsync(dto.LessonId)
+                            ?? throw new KeyNotFoundException($"Урок с Id = {dto.LessonId} не найден.");
+
+            oldLesson.Status = Status.Перенесён;            
+            await _lessonRepository.UpdateAsync(oldLesson);
+
+            var newLesson = new Lesson
+            {
+                Id = Guid.NewGuid(),
+                ClientId  = oldLesson.ClientId,
+                UserId    = oldLesson.UserId,
+                SubjectId = oldLesson.SubjectId,
+                LessonDate = dto.NewLessonDate.ToUniversalTime(),
+                Status    = Status.Запланирован 
+            };
+
+            await _lessonRepository.AddAsync(newLesson);
+
+            return _mapper.Map<LessonDto>(newLesson);
         }
     }
 }

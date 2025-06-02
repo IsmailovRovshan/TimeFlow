@@ -1,4 +1,6 @@
 ﻿
+using Domain.Entities;
+
 namespace Services.Abstractions.DTO
 {
     public record TimeSlotDto(Guid Id, DayOfWeek DayOfWeek, TimeSpan Time, bool IsBusy, Guid UserId);

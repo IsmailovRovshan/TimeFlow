@@ -24,6 +24,13 @@ namespace Web.Controllers
             return Ok(clients);
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> GetClientsAsync(string name)
+        {
+            var clients = await _clientService.SearchClientsAsync(name);
+            return Ok(clients);
+        }
+
         [Authorize(Roles = "Manager")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)

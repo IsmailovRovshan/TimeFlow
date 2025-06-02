@@ -79,6 +79,8 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
+// В .NET 6+ (Program.cs)
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 // 7) Ваши application services & repositories
 builder.Services.AddScoped<IClientService, ClientService>();

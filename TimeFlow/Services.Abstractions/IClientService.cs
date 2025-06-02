@@ -10,6 +10,6 @@ namespace Services.Abstractions
         Task UpdateAsync(Guid clientId, ClientDtoForUpdate client);
         Task DeleteAsync(Guid clientId);
         Task DeleteAllAsync();
-
+        Task<List<ClientDto>> SearchClientsAsync(string name);
     }
 }

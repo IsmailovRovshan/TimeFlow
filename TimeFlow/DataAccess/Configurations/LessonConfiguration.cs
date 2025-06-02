@@ -22,6 +22,11 @@ namespace DataAccess.Configurations
             builder.HasOne(l => l.Client)
                    .WithMany(c => c.Lessons)
                    .HasForeignKey(l => l.ClientId);
+            
+            builder.HasOne(l => l.Subject)
+                .WithMany(s => s.Lessons)
+                .HasForeignKey(l => l.SubjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(l => l.LessonDate)
                    .IsRequired();

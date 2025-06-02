@@ -21,8 +21,6 @@ namespace DataAccess.Repositories
             return client;
         }
 
-       
-
         public async Task DeleteAsync(Client client)
         {
             _dbContext.Clients.Remove(client);
@@ -54,6 +52,11 @@ namespace DataAccess.Repositories
             _dbContext.Clients.RemoveRange(_dbContext.Clients);
             await _dbContext.SaveChangesAsync();
         }
-
+        public async Task<List<Client>> SearchClientsAsync(string name)
+        {
+           return await _dbContext.Clients
+                .Where(c => c.FullName.Contains(name))
+                .ToListAsync();
+        }
     }
 }

@@ -56,12 +56,17 @@ namespace DataAccess.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("SubjectId");
 
                     b.HasIndex("UserId");
 
@@ -167,6 +172,12 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Subject", "Subject")
+                        .WithMany("Lessons")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Lessons")
                         .HasForeignKey("UserId")
@@ -174,6 +185,8 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
+
+                    b.Navigation("Subject");
 
                     b.Navigation("User");
                 });
@@ -205,6 +218,11 @@ namespace DataAccess.Migrations
                 });
 
             modelBuilder.Entity("Domain.Entities.Client", b =>
+                {
+                    b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Subject", b =>
                 {
                     b.Navigation("Lessons");
                 });

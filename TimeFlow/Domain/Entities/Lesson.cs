@@ -9,6 +9,9 @@
 
         public Guid ClientId { get; set; }
         public Client? Client { get; set; }
+        
+        public Guid SubjectId { get; set; }
+        public Subject? Subject { get; set; }
 
         public DateTime LessonDate { get; set; } = DateTime.Now;
         public Status Status { get; set; } = Status.Запланирован;

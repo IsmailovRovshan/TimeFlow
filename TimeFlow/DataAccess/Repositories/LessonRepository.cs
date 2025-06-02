@@ -28,11 +28,32 @@ namespace DataAccess.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<List<Lesson>> GetAllByClientId(Guid ClientId)
+        {
+            return await _dbContext.Lessons
+                .Include(l => l.User)
+                .Include(l => l.Client)
+                .Include(l => l.Subject)
+                .Where(l => l.ClientId == ClientId)
+                .OrderByDescending(l => l.LessonDate)
+                .ToListAsync();
+        }
+
+        public async Task<Lesson> GetByIdAsync(Guid Id)
+        {
+            return await _dbContext.Lessons
+                    .Include(l => l.User)
+                    .Include(l => l.Client)
+                    .Include(l => l.Subject)
+                    .FirstOrDefaultAsync(l => l.Id == Id);
+        }
+
         public async Task<List<Lesson>> GetAllAsync()
         {
             return await _dbContext.Lessons
                 .Include(l => l.User)
                 .Include(l => l.Client)
+                .Include(l => l.Subject)
                 .ToListAsync();
         }
 
@@ -41,6 +62,7 @@ namespace DataAccess.Repositories
             return await _dbContext.Lessons
                 .Include(l => l.User)
                 .Include(l => l.Client)
+                .Include(l => l.Subject)
                 .FirstOrDefaultAsync(l => l.UserId == TeacherId && l.ClientId == ClientId);
         }
 
@@ -55,6 +77,7 @@ namespace DataAccess.Repositories
             var lessons = await _dbContext.Lessons
                     .Include(l => l.User)
                     .Include(l => l.Client)
+                    .Include(l => l.Subject)
                     .Where(l => l.UserId == teacherId &&
                     l.LessonDate.Year == date.Year &&
                     l.LessonDate.Month == date.Month &&
@@ -69,8 +92,25 @@ namespace DataAccess.Repositories
             return await _dbContext.Lessons
             .Include(l => l.User)
             .Include(l => l.Client)
+            .Include(l => l.Subject)
             .Where(l => l.LessonDate >= startDate && l.LessonDate <= endDate && l.UserId == UserId)
             .ToListAsync();
+        }
+
+        public async Task<List<Lesson>> GetAllByClientIdAndDateAsync(Guid clientId, DateTime date)
+        {
+            return await _dbContext.Lessons
+                .Include(l => l.User)
+                .Include(l => l.Client)
+                .Include(l => l.Subject)
+                .Where(l =>
+                    l.ClientId == clientId &&
+                    l.LessonDate.Year  == date.Year &&
+                    l.LessonDate.Month == date.Month &&
+                    l.LessonDate.Day   == date.Day
+                )
+                .OrderByDescending(l => l.LessonDate)
+                .ToListAsync();
         }
 
         public Task AddRegularLessonsAsync(DayOfWeek DayOfWeek, TimeSpan Time, int Number)

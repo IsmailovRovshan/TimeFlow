@@ -36,6 +36,39 @@ namespace Web.Controllers
 
             return Ok(lesson);
         }
+        
+        [Authorize(Roles = "Manager,Teacher")]
+        [HttpGet("client/{clientId:guid}")]
+        public async Task<IActionResult> GetLessonsByClient(
+            [FromRoute] Guid clientId,
+            [FromQuery] DateTime? date)             
+        {
+            List<LessonDto> lessons;
+
+            if (date.HasValue)
+            {
+                lessons = await _lessonService.GetAllByClientIdAndDateAsync(clientId, date.Value);
+            }
+            else
+            {
+                lessons = await _lessonService.GetAllByClientId(clientId);
+            }
+
+            if (lessons == null || lessons.Count == 0)
+                return NotFound("Уроки не найдены.");
+
+            return Ok(lessons);
+        }
+        
+        [Authorize(Roles = "Manager,Teacher")]
+        [HttpDelete("{lessonId:guid}")]
+        public async Task<IActionResult> DeleteLessonByIdAsync(
+            [FromRoute] Guid lessonId)
+        {
+            await _lessonService.DeleteLessonByIdAsync(lessonId);
+            return NoContent();
+        }
+        
         [Authorize(Roles = "Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] LessonDtoForCreate lessonDto)
@@ -127,6 +160,19 @@ namespace Web.Controllers
             var lesson = await _lessonService.MainCreateLesson(dto, mode);
             return Ok(lesson);
         }
+        [Authorize(Roles = "Manager,Teacher")]
+        [HttpPost("reschedule")]
+        public async Task<IActionResult> RescheduleLessonAsync([FromBody] RescheduleLessonDto dto)
+        {
+            if (dto == null)
+                return BadRequest("Не указаны данные для переноса.");
+
+            var createdLessonDto = await _lessonService.RescheduleLessonAsync(dto);
+            return CreatedAtAction(nameof(GetByIdAsync),
+                new { userId = createdLessonDto.UserId, clientId = createdLessonDto.ClientId },
+                createdLessonDto);
+        }
+        
 
     }
 }

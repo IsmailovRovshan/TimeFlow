@@ -29,6 +29,7 @@ namespace DataAccess.Repositories
         {
             return await _dbContext.Subjects
                 .Include(m => m.Users)
+                .Include(l => l.Lessons)
                 .ToListAsync();
         }
 
@@ -36,6 +37,7 @@ namespace DataAccess.Repositories
         {
             return await _dbContext.Subjects
                 .Include(m => m.Users)
+                .Include(l => l.Lessons)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 

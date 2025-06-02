@@ -11,5 +11,6 @@ namespace Domain.Repository
         Task DeleteAsync(Client client);
 
         Task DeleteAllAsync();
+        Task<List<Client>> SearchClientsAsync(string name);
     }
 }

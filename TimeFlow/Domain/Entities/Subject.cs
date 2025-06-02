@@ -7,6 +7,7 @@ namespace Domain.Entities
         public string Name { get; set; }
 
         public List<User> Users { get; set; } = new List<User>();
+        public List<Lesson> Lessons { get; set; } = new List<Lesson>();
 
     }
 }

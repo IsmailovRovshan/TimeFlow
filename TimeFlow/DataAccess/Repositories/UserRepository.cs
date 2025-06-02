@@ -36,8 +36,8 @@ namespace DataAccess.Repositories
         {
             return await _dbContext.Users
                 .Include(t => t.TimeSlots)
-                .Include(l => l.Lessons)
                 .Include(l => l.Subjects)
+                .Include(l => l.Lessons)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -46,21 +46,6 @@ namespace DataAccess.Repositories
             _dbContext.Users.Update(user);
             await _dbContext.SaveChangesAsync();
         }
-
-        
-        //public async Task<List<User>> GetFreeAsync(DayOfWeek dayOfWeek, TimeSpan time)
-        //{
-        //    return await _dbContext.Users
-        //        .Include(u => u.TimeSlots)
-        //        .Where(u => u.Role == Role.Teacher)
-        //        .Where(u => u.TimeSlots.Any(ts =>
-        //            ts.DayOfWeek == dayOfWeek &&
-        //            ts.Time == time &&
-        //            ts.IsBusy))
-        //        .OrderBy(u => u.TimeSlots
-        //        .Count(ts => ts.DayOfWeek == dayOfWeek && ts.Time == time && ts.IsBusy))
-        //        .ToListAsync();
-        //}
 
         public async Task<List<User>> GetFreeAsync(IEnumerable<TimeSlot> requestedSlots, Guid subjectId)
         {

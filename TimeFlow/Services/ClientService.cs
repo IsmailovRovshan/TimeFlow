@@ -22,13 +22,19 @@ namespace Services
         {
             await _clientRepository.DeleteAllAsync();
         }
+
+        public async Task<List<ClientDto>> SearchClientsAsync(string name)
+        {
+            var clients = await _clientRepository.SearchClientsAsync(name);
+            return _mapper.Map<List<ClientDto>>(clients);
+        }
+
         public async Task<ClientDto> CreateAsync(ClientDtoForCreate clientDto)
         {
             var client = _mapper.Map<Client>(clientDto);
             await _clientRepository.AddAsync(client);
             return _mapper.Map<ClientDto>(client);
         }
-
         public async Task DeleteAsync(Guid clientId)
         {
             var client = await _clientRepository.GetByIdAsync(clientId);

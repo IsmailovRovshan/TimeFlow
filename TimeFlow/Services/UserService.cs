@@ -68,16 +68,6 @@ namespace Services
             await _teacherRepository.DeleteAsync(teacher);
         }
 
-
-        //public Task<List<UserDto>> GetFreeAsync(TimeSlotFilterDto timeSlotDto)
-        //    => GetFreeAsync(new[] { timeSlotDto });
-
-        //public async Task<UserDto> GetFreeTeacher(TimeSlotFilterDto timeSlotDto)
-        //{
-        //    var free = await GetFreeAsync(timeSlotDto);
-        //    return free.FirstOrDefault();
-        //}
-
         public async Task<List<UserDto>> GetFreeAsync(IEnumerable<TimeSlotDtoDateWithTime> requestedSlots, Guid subjectId)
         {
             var slotEntities = _mapper.Map<List<TimeSlot>>(requestedSlots);
@@ -107,12 +97,5 @@ namespace Services
 
             await _teacherRepository.RemoveSubjectFromUserAsync (user, subject);
         }
-
-        //public async Task<UserDto> GetFreeTeacher(IEnumerable<TimeSlotFilterDto> requestedSlots)
-        //{
-        //    var free = await GetFreeAsync(requestedSlots);
-        //    return free.FirstOrDefault()
-        //           ?? throw new InvalidOperationException("Нет преподавателя с такими слотами.");
-        //}
     }
 }

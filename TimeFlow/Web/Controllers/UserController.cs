@@ -35,7 +35,7 @@ namespace Web.Controllers
 
             return Ok(user);
         }
-        [Authorize(Roles = "Manager,Teacher")]
+        
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] UserDtoForCreate userDto)
         {
@@ -47,7 +47,7 @@ namespace Web.Controllers
             var newUser = await _userService.CreateAsync(userDto);
             return Ok(newUser);
         }
-        [Authorize(Roles = "Manager,Teacher")]
+        
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UserDtoForUpdate userDto)
         {
@@ -78,20 +78,6 @@ namespace Web.Controllers
             return Ok(freeTeachers);
         }
 
-        [Authorize(Roles = "Manager,Teacher")]
-        [HttpPost("most-free")]
-        public async Task<IActionResult> GetFreeTeacherAsync([FromBody] TimeSlotDtoDateWithTime timeSlotDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            //  var freeTeachers = await _userService.GetFreeTeacher(timeSlotDto);
-            return Ok(null);
-
-            // TODO 
-
-        }
 
         [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete]
