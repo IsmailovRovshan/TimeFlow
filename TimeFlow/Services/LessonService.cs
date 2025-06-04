@@ -114,7 +114,7 @@ namespace Services
 
             return _mapper.Map<List<LessonDto>>(lessons);
         }
-        
+
         public async Task<UserDto> AddRegularLessonsAsync(CreateRegularLessonsDto dto)
         {
             var user = await _userRepository.GetByIdAsync(dto.UserId)
@@ -131,8 +131,8 @@ namespace Services
 
             for (int i = 0; i < dto.Number; i++)
             {
-                var slot = dto.Slots[i % dto.Slots.Count];   
-                var weekIndex = i / dto.Slots.Count;             
+                var slot = dto.Slots[i % dto.Slots.Count];
+                var weekIndex = i / dto.Slots.Count;
                 var lessonDate = firstDates[slot].AddDays(weekIndex * 7);
 
                 var lesson = new Lesson
@@ -141,7 +141,7 @@ namespace Services
                     ClientId = dto.ClientId,
                     UserId = dto.UserId,
                     LessonDate = lessonDate,
-                    Status = Status.Запланирован, 
+                    Status = Status.Запланирован,
                     SubjectId = dto.SubjectId,
                 };
                 await _lessonRepository.AddAsync(lesson);
@@ -158,6 +158,22 @@ namespace Services
                     await _timeSlotRepository.UpdateAsync(timeSlot);
                 }
             }
+
+            if (!string.IsNullOrEmpty(user.Email))
+            {
+                var subjectText = "Создано расписание занятий";
+                var htmlBody =
+                    $@"
+                    <p>Здравствуйте, {user.FullName}!</p>
+                    <p>Для ученика <strong>{dto.Client.FullName} ({dto.Client.Age} лет)
+                    </strong> было создано следующее расписание по предмету <strong>{dto.Subject.Name}</strong>:</p>
+            <ul>
+                {string.Join("", dto.Slots.Select(d => $"<li>{d:dddd, dd MMMM yyyy HH:mm}</li>"))}
+            </ul>
+            <p>Пожалуйста, проверьте вашу панель расписания.</p>
+        ";
+                await _emailService.SendEmailAsync(user.Email, subjectText, htmlBody);
+            }
             return _mapper.Map<UserDto>(user);
         }
 
@@ -169,7 +185,7 @@ namespace Services
 
         public async Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, Guid UserId)
         {
-            var user = await _userRepository.GetByIdAsync(UserId) 
+            var user = await _userRepository.GetByIdAsync(UserId)
                 ?? throw new KeyNotFoundException("Преподаватель не найден");
 
             var subject = await _subjectRepository.GetByIdAsync(lessonDtos.SubjectId)
@@ -188,10 +204,12 @@ namespace Services
             (
                 UserId,
                 client.Id,
+                _mapper.Map<ClientDto>(client),
                 lessonDtos.Slots,
                 lessonDtos.StartDate,
                 lessonDtos.Number,
-                lessonDtos.SubjectId
+                lessonDtos.SubjectId,
+                _mapper.Map<SubjectDto>(subject)
 
             );
             return await AddRegularLessonsAsync(dtoForCreate);
@@ -214,7 +232,8 @@ namespace Services
                     break;
             }
 
-            if (bestTeacher == null) {
+            if (bestTeacher == null)
+            {
                 throw new KeyNotFoundException("Преподаватель null");
             }
 
@@ -226,7 +245,7 @@ namespace Services
             var lesson = await _lessonRepository.GetByIdAsync(lessonId)
                          ?? throw new KeyNotFoundException($"Урок с Id = {lessonId} не найден.");
 
-            lesson.Status = Status.Отменён;  
+            lesson.Status = Status.Отменён;
 
             await _lessonRepository.UpdateAsync(lesson);
         }
@@ -236,17 +255,17 @@ namespace Services
             var oldLesson = await _lessonRepository.GetByIdAsync(dto.LessonId)
                             ?? throw new KeyNotFoundException($"Урок с Id = {dto.LessonId} не найден.");
 
-            oldLesson.Status = Status.Перенесён;            
+            oldLesson.Status = Status.Перенесён;
             await _lessonRepository.UpdateAsync(oldLesson);
 
             var newLesson = new Lesson
             {
                 Id = Guid.NewGuid(),
-                ClientId  = oldLesson.ClientId,
-                UserId    = oldLesson.UserId,
+                ClientId = oldLesson.ClientId,
+                UserId = oldLesson.UserId,
                 SubjectId = oldLesson.SubjectId,
                 LessonDate = dto.NewLessonDate.ToUniversalTime(),
-                Status    = Status.Запланирован 
+                Status = Status.Запланирован
             };
 
             await _lessonRepository.AddAsync(newLesson);

@@ -29,7 +29,6 @@ public class EmailService : IEmailService
         message.To.Add(MailboxAddress.Parse(to));
         message.Subject = subject;
 
-        // Используем HTML-формат
         var bodyBuilder = new BodyBuilder
         {
             HtmlBody = htmlBody
@@ -37,8 +36,8 @@ public class EmailService : IEmailService
         message.Body = bodyBuilder.ToMessageBody();
 
         using var smtp = new SmtpClient();
-        // Подключаемся к SMTP-серверу
-        await smtp.ConnectAsync(smtpHost, smtpPort, useSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls);
+
+        await smtp.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
         await smtp.AuthenticateAsync(userName, password);
         await smtp.SendAsync(message);
         await smtp.DisconnectAsync(true);

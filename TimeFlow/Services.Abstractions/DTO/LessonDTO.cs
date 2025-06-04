@@ -11,9 +11,8 @@ namespace Services.Abstractions.DTO
 
     public record LessonDtoForAutoAdd(Guid ClientId, DayOfWeek DayOfWeek, TimeSpan Time, int Number);
 
-    public record CreateRegularLessonsDto(Guid UserId, Guid ClientId, List<TimeSlotDtoDateWithTime> Slots, DateTime StartDate, int Number, Guid SubjectId);
+    public record CreateRegularLessonsDto(Guid UserId, Guid ClientId,ClientDto Client, List<TimeSlotDtoDateWithTime> Slots, DateTime StartDate, int Number, Guid SubjectId, SubjectDto? Subject);
 
-    //Метод создания и составления расписания 
     public record MainCreateLessonDto(string FullName, int Age, Guid SubjectId, List<TimeSlotDtoDateWithTime> Slots, 
         DateTime StartDate, int Number);
     public record RescheduleLessonDto(
