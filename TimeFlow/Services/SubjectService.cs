@@ -33,12 +33,8 @@ namespace Services
 
         public async Task DeleteAsync(Guid subjectId)
         {
-            var subject = await _subjectRepository.GetByIdAsync(subjectId);
-
-            if (subject == null)
-            {
-                throw new ArgumentException("Предмет не найден.");
-            }
+            var subject = await _subjectRepository.GetByIdAsync(subjectId) 
+                ?? throw new ArgumentException("Предмет не найден."); 
 
             await _subjectRepository.DeleteAsync(subject);
         }
@@ -46,30 +42,21 @@ namespace Services
         public async Task<List<SubjectDto>> GetAllAsync()
         {
             var subjects = await _subjectRepository.GetAllAsync();
-
             return _mapper.Map<List<SubjectDto>>(subjects);
         }
 
         public async Task<SubjectDto> GetByIdAsync(Guid id)
         {
-            var subject = await _subjectRepository.GetByIdAsync(id);
-
-            if (subject == null)
-            {
-                throw new ArgumentException("Менеджер не найден.");
-            }
+            var subject = await _subjectRepository.GetByIdAsync(id)
+                ?? throw new ArgumentException("Менеджер не найден."); ;
 
             return _mapper.Map<SubjectDto>(subject);
         }
 
         public async Task UpdateAsync(Guid subjectId, SubjectDtoForUpdate subject)
         {
-            var existingSubject = await _subjectRepository.GetByIdAsync(subjectId);
-
-            if (existingSubject == null)
-            {
-                throw new ArgumentException("Менеджер не найден.");
-            }
+            var existingSubject = await _subjectRepository.GetByIdAsync(subjectId)
+                ?? throw new ArgumentException("Менеджер не найден."); ;
 
             _mapper.Map(subject, existingSubject);
 

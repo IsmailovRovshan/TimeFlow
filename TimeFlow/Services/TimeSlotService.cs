@@ -42,12 +42,8 @@ namespace Services
 
         public async Task DeleteAsync(Guid timeSlotId)
         {
-            var timeSlot = await _timeSlotRepository.GetByIdAsync(timeSlotId);
-
-            if (timeSlot == null)
-            {
-                throw new ArgumentException("Слот не найден.");
-            }
+            var timeSlot = await _timeSlotRepository.GetByIdAsync(timeSlotId)
+                ?? throw new ArgumentException("Слот не найден."); ;
 
             await _timeSlotRepository.DeleteAsync(timeSlot);
         }
@@ -61,24 +57,16 @@ namespace Services
 
         public async Task<TimeSlotDto> GetByIdAsync(Guid id)
         {
-            var timeSlot = await _timeSlotRepository.GetByIdAsync(id);
-
-            if (timeSlot == null)
-            {
-                throw new ArgumentException("Слот не найден.");
-            }
+            var timeSlot = await _timeSlotRepository.GetByIdAsync(id)
+                ?? throw new ArgumentException("Слот не найден."); ;
 
             return _mapper.Map<TimeSlotDto>(timeSlot);
         }
 
         public async Task UpdateAsync(Guid timeSlotId, TimeSlotDtoForUpdate timeSlot)
         {
-            var existingTimeSlot = await _timeSlotRepository.GetByIdAsync(timeSlotId);
-
-            if (existingTimeSlot == null)
-            {
-                throw new ArgumentException("Слот не найден.");
-            }
+            var existingTimeSlot = await _timeSlotRepository.GetByIdAsync(timeSlotId)
+                ?? throw new ArgumentException("Слот не найден."); ;
 
             _mapper.Map(timeSlot, existingTimeSlot);
 
