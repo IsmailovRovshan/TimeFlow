@@ -58,7 +58,7 @@ namespace Web.Controllers
             var user = await _userService.UpdateAsync(id, userDto);
             return Ok(user);
         }
-        [Authorize(Roles = "Manager,Teacher")]
+        
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {

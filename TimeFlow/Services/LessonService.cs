@@ -159,21 +159,21 @@ namespace Services
                 }
             }
 
-            if (!string.IsNullOrEmpty(user.Email))
-            {
-                var subjectText = "Создано расписание занятий";
-                var htmlBody =
-                    $@"
-                    <p>Здравствуйте, {user.FullName}!</p>
-                    <p>Для ученика <strong>{dto.Client.FullName} ({dto.Client.Age} лет)
-                    </strong> было создано следующее расписание по предмету <strong>{dto.Subject.Name}</strong>:</p>
-            <ul>
-                {string.Join("", dto.Slots.Select(d => $"<li>{d:dddd, dd MMMM yyyy HH:mm}</li>"))}
-            </ul>
-            <p>Пожалуйста, проверьте вашу панель расписания.</p>
-        ";
-                await _emailService.SendEmailAsync(user.Email, subjectText, htmlBody);
-            }
+            //if (!string.IsNullOrEmpty(user.Email))
+            //{
+            //    var subjectText = "Создано расписание занятий";
+            //    var htmlBody =
+            //        $@"
+            //        <p>Здравствуйте, {user.FullName}!</p>
+            //        <p>Для ученика <strong>{dto.Client.FullName} ({dto.Client.Age} лет)
+            //        </strong> было создано следующее расписание по предмету <strong>{dto.Subject.Name}</strong>:</p>
+            //         <ul>
+            //            {string.Join("", dto.Slots.Select(d => $"<li>{d:dddd, dd MMMM yyyy HH:mm}</li>"))}
+            //        </ul>
+            //        <p>Пожалуйста, проверьте вашу панель расписания.</p>";
+
+            //    await _emailService.SendEmailAsync(user.Email, subjectText, htmlBody);
+            //}
             return _mapper.Map<UserDto>(user);
         }
 
@@ -223,9 +223,39 @@ namespace Services
             switch (mode)
             {
                 case SearchMode.TheMostFree:
-                    bestTeacher = teachers
-                    .OrderByDescending(t => t.TimeSlots.Count(ts => ts.IsBusy)).First() ?? throw new KeyNotFoundException("Преподаватели не найдены");
-                    break;
+                    {
+                        if (teachers == null || teachers.Count == 0)
+                            throw new KeyNotFoundException("Преподаватели не найдены");
+
+                        UserDto? best = null;
+                        int minBusy = int.MaxValue;
+                        int minTotal = 1; // чтобы не делить на 0 при сравнении
+
+                        foreach (var teacher in teachers)
+                        {
+                            int busy = 0;
+                            int total = teacher.TimeSlots.Count;
+
+                            if (total == 0)
+                                continue;
+
+                            foreach (var slot in teacher.TimeSlots)
+                            {
+                                if (!slot.IsBusy) busy++;
+                            }
+
+                            if (best == null || busy * minTotal < minBusy * total)
+                            {
+                                best = teacher;
+                                minBusy = busy;
+                                minTotal = total;
+                            }
+                        }
+
+                        bestTeacher = best ?? throw new KeyNotFoundException("Преподаватели не найдены");
+                        break;
+                    }
+
                 case SearchMode.ByExperience:
                     bestTeacher = teachers
                     .OrderByDescending(t => t.Experiense).First() ?? throw new KeyNotFoundException("Преподаватели не найдены");
