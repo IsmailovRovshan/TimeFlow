@@ -229,7 +229,7 @@ namespace Services
 
                         UserDto? best = null;
                         int minBusy = int.MaxValue;
-                        int minTotal = 1; // чтобы не делить на 0 при сравнении
+                        int minTotal = 1; 
 
                         foreach (var teacher in teachers)
                         {
@@ -259,6 +259,18 @@ namespace Services
                 case SearchMode.ByExperience:
                     bestTeacher = teachers
                     .OrderByDescending(t => t.Experiense).First() ?? throw new KeyNotFoundException("Преподаватели не найдены");
+                    break;
+
+                case SearchMode.ByOldest:
+                    bestTeacher = teachers
+                        .OrderByDescending(t => t.Age)
+                        .FirstOrDefault() ?? throw new KeyNotFoundException("Преподаватели не найдены");
+                    break;
+
+                case SearchMode.ByYoungest:
+                    bestTeacher = teachers
+                        .OrderBy(t => t.Age)
+                        .FirstOrDefault() ?? throw new KeyNotFoundException("Преподаватели не найдены");
                     break;
             }
 

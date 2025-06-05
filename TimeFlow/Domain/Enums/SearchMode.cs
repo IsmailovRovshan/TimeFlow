@@ -9,6 +9,8 @@ namespace Domain.Enums
     public enum SearchMode
     {
         TheMostFree = 0,
-        ByExperience = 1
+        ByExperience = 1,
+        ByOldest = 2,
+        ByYoungest = 3
     }
 }
