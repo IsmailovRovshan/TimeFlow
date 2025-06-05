@@ -159,21 +159,36 @@ namespace Services
                 }
             }
 
-            //if (!string.IsNullOrEmpty(user.Email))
-            //{
-            //    var subjectText = "Создано расписание занятий";
-            //    var htmlBody =
-            //        $@"
-            //        <p>Здравствуйте, {user.FullName}!</p>
-            //        <p>Для ученика <strong>{dto.Client.FullName} ({dto.Client.Age} лет)
-            //        </strong> было создано следующее расписание по предмету <strong>{dto.Subject.Name}</strong>:</p>
-            //         <ul>
-            //            {string.Join("", dto.Slots.Select(d => $"<li>{d:dddd, dd MMMM yyyy HH:mm}</li>"))}
-            //        </ul>
-            //        <p>Пожалуйста, проверьте вашу панель расписания.</p>";
+            if (!string.IsNullOrEmpty(user.Email))
+            {
+                var subjectText = "Создано расписание занятий";
 
-            //    await _emailService.SendEmailAsync(user.Email, subjectText, htmlBody);
-            //}
+                var ru = System.Globalization.CultureInfo.GetCultureInfo("ru-RU");
+
+                string slotsHtml = string.Join("",
+                    dto.Slots.Select(s =>
+                    {
+                        var dayNameRu = ru.DateTimeFormat.GetDayName(s.DayOfWeek);
+                        dayNameRu = char.ToUpper(dayNameRu[0]) + dayNameRu.Substring(1);
+
+                        var timeText = s.Time.ToString(@"hh\:mm");
+
+                        return $"<li>{dayNameRu}, {timeText}</li>";
+                    })
+                );
+
+                var htmlBody = $@"
+                <p>Здравствуйте, {user.FullName}!</p>
+                <p>Для ученика <strong>{dto.Client.FullName} ({dto.Client.Age} лет)</strong> 
+                было создано следующее расписание по предмету <strong>{dto.Subject.Name}</strong>:</p>
+                <ul>
+                {slotsHtml}
+                </ul>
+                <p>Пожалуйста, проверьте вашу панель расписания.</p>";
+
+                await _emailService.SendEmailAsync(user.Email, subjectText, htmlBody);
+            }
+
             return _mapper.Map<UserDto>(user);
         }
 
