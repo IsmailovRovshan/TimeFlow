@@ -10,6 +10,7 @@ using Services.Abstractions.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -177,16 +178,16 @@ namespace Services
                     })
                 );
 
-                var htmlBody = $@"
-                <p>Здравствуйте, {user.FullName}!</p>
-                <p>Для ученика <strong>{dto.Client.FullName} ({dto.Client.Age} лет)</strong> 
-                было создано следующее расписание по предмету <strong>{dto.Subject.Name}</strong>:</p>
-                <ul>
-                {slotsHtml}
-                </ul>
-                <p>Пожалуйста, проверьте вашу панель расписания.</p>";
+                //var htmlBody = $@"
+                //<p>Здравствуйте, {user.FullName}!</p>
+                //<p>Для ученика <strong>{dto.Client.FullName} ({dto.Client.Age} лет)</strong> 
+                //было создано следующее расписание по предмету <strong>{dto.Subject.Name}</strong>:</p>
+                //<ul>
+                //{slotsHtml}
+                //</ul>
+                //<p>Пожалуйста, проверьте вашу панель расписания.</p>";
 
-                await _emailService.SendEmailAsync(user.Email, subjectText, htmlBody);
+                //await _emailService.SendEmailAsync(user.Email, subjectText, htmlBody);
             }
 
             return _mapper.Map<UserDto>(user);
@@ -206,14 +207,21 @@ namespace Services
             var subject = await _subjectRepository.GetByIdAsync(lessonDtos.SubjectId)
                 ?? throw new KeyNotFoundException("Предмет не найден"); ;
 
-            var newClient = new Client
-            {
-                Id = Guid.NewGuid(),
-                FullName = lessonDtos.FullName,
-                Age = lessonDtos.Age
-            };
+            Client client;
 
-            var client = await _clientRepository.AddAsync(newClient);
+            if (lessonDtos.ClientId != null)
+                client = await _clientRepository.GetByIdAsync(lessonDtos.ClientId.Value);
+
+            else
+            {
+                client = new Client
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = lessonDtos.FullName,
+                    Age = lessonDtos.Age.Value,
+                };
+                client = await _clientRepository.AddAsync(client);
+            }
 
             var dtoForCreate = new CreateRegularLessonsDto
             (
@@ -229,10 +237,8 @@ namespace Services
             );
             return await AddRegularLessonsAsync(dtoForCreate);
         }
-
-        public async Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, SearchMode mode)
+        public async Task<UserDto> SearchTeacherByMode(List<UserDto> teachers, SearchMode mode)
         {
-            var teachers = await _userService.GetFreeAsync(lessonDtos.Slots, lessonDtos.SubjectId);
             UserDto bestTeacher = null;
 
             switch (mode)
@@ -244,7 +250,7 @@ namespace Services
 
                         UserDto? best = null;
                         int minBusy = int.MaxValue;
-                        int minTotal = 1; 
+                        int minTotal = 1;
 
                         foreach (var teacher in teachers)
                         {
@@ -288,6 +294,15 @@ namespace Services
                         .FirstOrDefault() ?? throw new KeyNotFoundException("Преподаватели не найдены");
                     break;
             }
+            return bestTeacher;
+        }
+
+        public async Task<UserDto> MainCreateLesson(MainCreateLessonDto lessonDtos, SearchMode mode)
+        {
+            var teachers = await _userService.GetFreeAsync(lessonDtos.Slots, lessonDtos.SubjectId);
+            UserDto bestTeacher = null;
+
+            bestTeacher = await SearchTeacherByMode(teachers, mode);
 
             if (bestTeacher == null)
             {

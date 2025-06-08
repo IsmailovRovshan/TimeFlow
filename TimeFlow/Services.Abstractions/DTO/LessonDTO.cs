@@ -13,7 +13,7 @@ namespace Services.Abstractions.DTO
 
     public record CreateRegularLessonsDto(Guid UserId, Guid ClientId,ClientDto Client, List<TimeSlotDtoDateWithTime> Slots, DateTime StartDate, int Number, Guid SubjectId, SubjectDto? Subject);
 
-    public record MainCreateLessonDto(string FullName, int Age, Guid SubjectId, List<TimeSlotDtoDateWithTime> Slots, 
+    public record MainCreateLessonDto(Guid? ClientId, string? FullName, int? Age, Guid SubjectId, List<TimeSlotDtoDateWithTime> Slots, 
         DateTime StartDate, int Number);
     public record RescheduleLessonDto(
         Guid LessonId,           
