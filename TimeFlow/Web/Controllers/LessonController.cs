@@ -17,14 +17,12 @@ namespace Web.Controllers
         {
             _lessonService = lessonService;
         }
-        [Authorize(Roles = "Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var lessons = await _lessonService.GetAllAsync();
             return Ok(lessons);
         }
-        [Authorize(Roles = "Manager")]
         [HttpGet("{teacherId:guid}/{clientId:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid teacherId, Guid clientId)
         {
@@ -37,7 +35,6 @@ namespace Web.Controllers
             return Ok(lesson);
         }
         
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("client/{clientId:guid}")]
         public async Task<IActionResult> GetLessonsByClient(
             [FromRoute] Guid clientId,
@@ -60,7 +57,6 @@ namespace Web.Controllers
             return Ok(lessons);
         }
         
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete("{lessonId:guid}")]
         public async Task<IActionResult> DeleteLessonByIdAsync(
             [FromRoute] Guid lessonId)
@@ -69,7 +65,6 @@ namespace Web.Controllers
             return NoContent();
         }
         
-        [Authorize(Roles = "Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] LessonDtoForCreate lessonDto)
         {
@@ -81,7 +76,6 @@ namespace Web.Controllers
             var createdLesson = await _lessonService.CreateAsync(lessonDto);
             return Ok(createdLesson);
         }
-        [Authorize(Roles = "Manager")]
 
         [HttpPut("{teacherId:guid}/{clientId:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid teacherId, Guid clientId, [FromBody] LessonDtoForUpdate lessonDto)
@@ -95,14 +89,12 @@ namespace Web.Controllers
             return NoContent();
 
         }
-        [Authorize(Roles = "Manager")]
         [HttpDelete("{teacherId:guid}/{clientId:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid teacherId, Guid clientId)
         {
             await _lessonService.DeleteAsync(teacherId, clientId);
             return NoContent();
         }
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("{teacherId:guid}/lessons")]
         public async Task<IActionResult> GetLessonsByDateAsync(Guid teacherId, [FromQuery] DateTime date)
         {
@@ -114,21 +106,18 @@ namespace Web.Controllers
 
             return Ok(lessons);
         }
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("range")]
         public async Task<IActionResult> GetLessonsInRangeAsync([FromBody] LessonDtoInRange lessonDto)
         {
             var lessons = await _lessonService.GetLessonsInRangeAsync(lessonDto);
             return Ok(lessons);
         }
-        [Authorize(Roles = "Manager")]
         [HttpDelete]
         public async Task<IActionResult> DeleteAllAsync()
         {
             await _lessonService.DeleteAllAsync();
             return NoContent();
         }
-        [Authorize(Roles = "Manager")]
         [HttpPost("regular")]
         public async Task<IActionResult> AddRegularLessonsAsync(
             [FromBody] CreateRegularLessonsDto lessonDto)
@@ -139,7 +128,6 @@ namespace Web.Controllers
             var lesson = await _lessonService.AddRegularLessonsAsync(lessonDto);
             return Ok(lesson);
         }
-        [Authorize(Roles = "Manager")]
         [HttpPost("main-create")]
         public async Task<IActionResult> MainCreateLesson([FromBody] MainCreateLessonDto dto, Guid userId)
         {
@@ -149,7 +137,6 @@ namespace Web.Controllers
             var lesson = await _lessonService.MainCreateLesson(dto, userId);
             return Ok(lesson);
         }
-        [Authorize(Roles = "Manager")]
         [HttpPost("main-create/{mode}")]
         public async Task<IActionResult> MainCreateLessonByMode([FromRoute] SearchMode mode, [FromBody] MainCreateLessonDto dto)
         {
@@ -160,7 +147,6 @@ namespace Web.Controllers
             var lesson = await _lessonService.MainCreateLesson(dto, mode);
             return Ok(lesson);
         }
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("reschedule")]
         public async Task<IActionResult> RescheduleLessonAsync([FromBody] RescheduleLessonDto dto)
         {

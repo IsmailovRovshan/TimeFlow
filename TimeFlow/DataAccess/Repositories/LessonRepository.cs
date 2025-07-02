@@ -14,8 +14,6 @@ namespace DataAccess.Repositories
             _dbContext = dbContext;
         }
 
-
-
         public async Task AddAsync(Lesson lesson)
         {
             await _dbContext.Lessons.AddAsync(lesson);

@@ -16,7 +16,6 @@ namespace Web.Controllers
             _clientService = clientService;
         }
 
-        [Authorize(Roles = "Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -31,7 +30,6 @@ namespace Web.Controllers
             return Ok(clients);
         }
 
-        [Authorize(Roles = "Manager")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
@@ -39,7 +37,6 @@ namespace Web.Controllers
             return Ok(client);
         }
 
-        [Authorize(Roles = "Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] ClientDtoForCreate clientDto)
         {
@@ -52,7 +49,6 @@ namespace Web.Controllers
             return Ok(newClient);
         }
 
-        [Authorize(Roles = "Manager")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] ClientDtoForUpdate clientDto)
         {
@@ -64,7 +60,6 @@ namespace Web.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Manager")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
@@ -72,7 +67,6 @@ namespace Web.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Manager")]
         [HttpDelete]
         public async Task<IActionResult> DeleteAllAsync()
         {

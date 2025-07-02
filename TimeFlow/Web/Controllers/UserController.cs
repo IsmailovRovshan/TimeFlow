@@ -65,7 +65,6 @@ namespace Web.Controllers
             await _userService.DeleteAsync(id);
             return NoContent();
         }
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("free")]
         public async Task<IActionResult> GetFreeTeachersAsync(
         [FromQuery] Guid subjectId,
@@ -79,14 +78,12 @@ namespace Web.Controllers
         }
 
 
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete]
         public async Task<IActionResult> DeleteAllAsync()
         {
             await _userService.DeleteAllAsync();
             return NoContent();
         }
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("{userId:guid}/subjects/{subjectId:guid}")]
         public async Task<IActionResult> AddSubjectToUser(Guid userId, Guid subjectId)
         {
@@ -94,7 +91,6 @@ namespace Web.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete("{userId:guid}/subjects/{subjectId:guid}")]
         public async Task<IActionResult> RemoveSubjectFromUser(Guid userId, Guid subjectId)
         {
