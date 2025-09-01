@@ -127,7 +127,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", p => p.RequireRole(Role.Admin.ToString()));
     options.AddPolicy("ManagerOnly", p => p.RequireRole(Role.Manager.ToString()));
-    options.AddPolicy("TeacherOnly", p => p.RequireRole(Role.Teacher.ToString()));
+    options.AddPolicy("TeacherOnlyw", p => p.RequireRole(Role.Teacher.ToString()));
 });
 
 var app = builder.Build();
