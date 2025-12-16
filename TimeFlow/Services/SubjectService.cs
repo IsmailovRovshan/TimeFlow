@@ -37,6 +37,8 @@ namespace Services
                 ?? throw new ArgumentException("Предмет не найден."); 
 
             await _subjectRepository.DeleteAsync(subject);
+
+            Console.WriteLine(111122);
         }
 
         public async Task<List<SubjectDto>> GetAllAsync()
