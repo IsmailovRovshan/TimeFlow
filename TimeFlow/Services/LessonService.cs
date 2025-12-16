@@ -52,6 +52,7 @@ namespace Services
         {
             var lessons = await _lessonRepository.GetAllByClientId(ClientId);
             return _mapper.Map<List<LessonDto>>(lessons);
+            Console.WriteLine(1);
         }
 
         public Task DeleteAllAsync()
