@@ -29,6 +29,8 @@ namespace Services
             var subject = _mapper.Map<Subject>(subjectDto);
             await _subjectRepository.AddAsync(subject);
             return _mapper.Map<SubjectDto>(subject);
+
+            Console.WriteLine(1111);
         }
 
         public async Task DeleteAsync(Guid subjectId)
