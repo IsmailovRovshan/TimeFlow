@@ -79,8 +79,6 @@ namespace Services
         {
             var lesson = await _lessonRepository.GetByIdAsync(userId, clientId)
                          ?? throw new KeyNotFoundException("Урок не найден.");
-            Console.WriteLine("not dev");
-            Console.WriteLine("not dev");
             await _lessonRepository.DeleteAsync(lesson);
         }
 
