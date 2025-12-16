@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Net.Http;
+using System.Threading;
 
 namespace Services
 {
