@@ -51,6 +51,8 @@ namespace Services
         public async Task<List<LessonDto>> GetAllByClientId(Guid ClientId)
         {
             var lessons = await _lessonRepository.GetAllByClientId(ClientId);
+            Console.WriteLine("dev");
+            Console.WriteLine("dev");
             return _mapper.Map<List<LessonDto>>(lessons);
             Console.WriteLine(2);
         }
