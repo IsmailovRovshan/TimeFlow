@@ -30,7 +30,7 @@ namespace Services
             await _subjectRepository.AddAsync(subject);
             return _mapper.Map<SubjectDto>(subject);
 
-            Console.WriteLine(1111);
+            Console.WriteLine('1111');
         }
 
         public async Task DeleteAsync(Guid subjectId)
@@ -40,7 +40,7 @@ namespace Services
 
             await _subjectRepository.DeleteAsync(subject);
 
-            Console.WriteLine(111122);
+            Console.WriteLine('111122');
         }
 
         public async Task<List<SubjectDto>> GetAllAsync()
